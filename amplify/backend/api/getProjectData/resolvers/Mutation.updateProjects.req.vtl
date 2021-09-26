@@ -1,0 +1,9 @@
+#set( $updateList = {} )
+#foreach( $entry in $ctx.args.updateProjectsInput.keySet() )
+  #set( $discard = $updateList.put($entry, "'$ctx.args.updateProjectsInput[$entry]'") )
+#end
+#set( $update = $updateList.toString().replace("{","").replace("}","") )
+{
+  "version": "2018-05-29",
+  "statements":   ["UPDATE Projects SET $update WHERE project_id='$ctx.args.updateProjectsInput.project_id'", "SELECT * FROM Projects WHERE project_id='$ctx.args.updateProjectsInput.project_id'"]
+}

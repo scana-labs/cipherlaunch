@@ -1,15 +1,25 @@
 {
-  "dev": {
-    "awscloudformation": {
-      "AuthRoleName": "amplify-cipherlaunchweb-dev-174328-authRole",
-      "UnauthRoleArn": "arn:aws:iam::342243318645:role/amplify-cipherlaunchweb-dev-174328-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::342243318645:role/amplify-cipherlaunchweb-dev-174328-authRole",
-      "Region": "us-west-2",
-      "DeploymentBucketName": "amplify-cipherlaunchweb-dev-174328-deployment",
-      "UnauthRoleName": "amplify-cipherlaunchweb-dev-174328-unauthRole",
-      "StackName": "amplify-cipherlaunchweb-dev-174328",
-      "StackId": "arn:aws:cloudformation:us-west-2:342243318645:stack/amplify-cipherlaunchweb-dev-174328/c59a1300-1e62-11ec-a1cd-0a540734c593",
-      "AmplifyAppId": "d1k76an8if69t9"
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-cipherlaunchweb-dev-174328-authRole",
+            "UnauthRoleArn": "arn:aws:iam::342243318645:role/amplify-cipherlaunchweb-dev-174328-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::342243318645:role/amplify-cipherlaunchweb-dev-174328-authRole",
+            "Region": "us-west-2",
+            "DeploymentBucketName": "amplify-cipherlaunchweb-dev-174328-deployment",
+            "UnauthRoleName": "amplify-cipherlaunchweb-dev-174328-unauthRole",
+            "StackName": "amplify-cipherlaunchweb-dev-174328",
+            "StackId": "arn:aws:cloudformation:us-west-2:342243318645:stack/amplify-cipherlaunchweb-dev-174328/c59a1300-1e62-11ec-a1cd-0a540734c593",
+            "AmplifyAppId": "d1k76an8if69t9"
+        },
+        "categories": {
+            "api": {
+                "getProjectData": {
+                    "rdsRegion": "us-west-2",
+                    "rdsClusterIdentifier": "arn:aws:rds:us-west-2:342243318645:cluster:cipherlaunch-nft-projects",
+                    "rdsSecretStoreArn": "arn:aws:secretsmanager:us-west-2:342243318645:secret:rds-db-credentials/cluster-Y2XRKBW6ND4DWUYHYMB4ZNZZZM/admin-CpGVzM",
+                    "rdsDatabaseName": "Projects"
+                }
+            }
+        }
     }
-  }
 }

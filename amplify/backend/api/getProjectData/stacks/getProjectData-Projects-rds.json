@@ -1,0 +1,1091 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "AppSyncApiName": {
+      "Type": "String",
+      "Description": "The name of the AppSync API generated from database Projects",
+      "Default": "AppSyncSimpleTransform"
+    },
+    "env": {
+      "Type": "String",
+      "Description": "The environment name. e.g. Dev, Test, or Production",
+      "Default": "NONE"
+    },
+    "S3DeploymentBucket": {
+      "Type": "String",
+      "Description": "The S3 bucket containing all deployment assets for the project."
+    },
+    "S3DeploymentRootKey": {
+      "Type": "String",
+      "Description": "An S3 key relative to the S3DeploymentBucket that points to the root of the deployment directory."
+    },
+    "AppSyncApiId": {
+      "Type": "String",
+      "Description": "The id of the AppSync API associated with this project."
+    },
+    "rdsRegion": {
+      "Type": "String",
+      "Description": "The region that the RDS Cluster is located in."
+    },
+    "rdsClusterIdentifier": {
+      "Type": "String",
+      "Description": "The ARN identifier denoting the RDS cluster."
+    },
+    "rdsSecretStoreArn": {
+      "Type": "String",
+      "Description": "The ARN for the Secret containing the access for the RDS cluster."
+    },
+    "rdsDatabaseName": {
+      "Type": "String",
+      "Description": "The name of the database within the RDS cluster to use."
+    }
+  },
+  "Resources": {
+    "RelationalDatabaseDataSource": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "Type": "RELATIONAL_DATABASE",
+        "Name": "Projects_rds_DataSource",
+        "Description": "RDS Data Source Provisioned for Projects",
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseAccessRole",
+            "Arn"
+          ]
+        },
+        "RelationalDatabaseConfig": {
+          "RelationalDatabaseSourceType": "RDS_HTTP_ENDPOINT",
+          "RdsHttpEndpointConfig": {
+            "AwsRegion": {
+              "Ref": "rdsRegion"
+            },
+            "DbClusterIdentifier": {
+              "Ref": "rdsClusterIdentifier"
+            },
+            "DatabaseName": {
+              "Ref": "rdsDatabaseName"
+            },
+            "Schema": "mysql",
+            "AwsSecretStoreArn": {
+              "Ref": "rdsSecretStoreArn"
+            }
+          }
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseAccessRole"
+      ]
+    },
+    "RelationalDatabaseAccessRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              "role",
+              {
+                "Ref": "AppSyncApiId"
+              },
+              {
+                "Ref": "env"
+              }
+            ]
+          ]
+        },
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "RelationalDatabaseAccessPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "rds-data:ExecuteSql",
+                    "rds-data:ExecuteStatement",
+                    "rds-data:DeleteItems",
+                    "rds-data:GetItems",
+                    "rds-data:InsertItems",
+                    "rds-data:UpdateItems"
+                  ],
+                  "Resource": [
+                    {
+                      "Ref": "rdsClusterIdentifier"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "secretsmanager:GetSecretValue"
+                  ],
+                  "Resource": [
+                    {
+                      "Ref": "rdsSecretStoreArn"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "CategoriesCreateResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "TypeName": "Mutation",
+        "FieldName": "createCategories",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.createCategories.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.createCategories.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "CategoriesGetResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "FieldName": "getCategories",
+        "TypeName": "Query",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Query.getCategories.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Query.getCategories.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "CategoriesUpdateResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "TypeName": "Mutation",
+        "FieldName": "updateCategories",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.updateCategories.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.updateCategories.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "CategoriesDeleteResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "TypeName": "Mutation",
+        "FieldName": "deleteCategories",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.deleteCategories.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.deleteCategories.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "CategoriesListResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "TypeName": "Query",
+        "FieldName": "listCategories",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Query.listCategories.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Query.listCategories.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "CollectionsCreateResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "TypeName": "Mutation",
+        "FieldName": "createCollections",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.createCollections.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.createCollections.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "CollectionsGetResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "FieldName": "getCollections",
+        "TypeName": "Query",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Query.getCollections.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Query.getCollections.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "CollectionsUpdateResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "TypeName": "Mutation",
+        "FieldName": "updateCollections",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.updateCollections.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.updateCollections.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "CollectionsDeleteResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "TypeName": "Mutation",
+        "FieldName": "deleteCollections",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.deleteCollections.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.deleteCollections.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "CollectionsListResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "TypeName": "Query",
+        "FieldName": "listCollections",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Query.listCollections.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Query.listCollections.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "ProjectsCreateResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "TypeName": "Mutation",
+        "FieldName": "createProjects",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.createProjects.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.createProjects.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "ProjectsGetResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "FieldName": "getProjects",
+        "TypeName": "Query",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Query.getProjects.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Query.getProjects.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "ProjectsUpdateResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "TypeName": "Mutation",
+        "FieldName": "updateProjects",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.updateProjects.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.updateProjects.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "ProjectsDeleteResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "TypeName": "Mutation",
+        "FieldName": "deleteProjects",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.deleteProjects.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.deleteProjects.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "ProjectsListResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "TypeName": "Query",
+        "FieldName": "listProjects",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Query.listProjects.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Query.listProjects.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "TraitsCreateResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "TypeName": "Mutation",
+        "FieldName": "createTraits",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.createTraits.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.createTraits.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "TraitsGetResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "FieldName": "getTraits",
+        "TypeName": "Query",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Query.getTraits.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Query.getTraits.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "TraitsUpdateResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "TypeName": "Mutation",
+        "FieldName": "updateTraits",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.updateTraits.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.updateTraits.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "TraitsDeleteResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "TypeName": "Mutation",
+        "FieldName": "deleteTraits",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.deleteTraits.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Mutation.deleteTraits.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    },
+    "TraitsListResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "AppSyncApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "RelationalDatabaseDataSource",
+            "Name"
+          ]
+        },
+        "TypeName": "Query",
+        "FieldName": "listTraits",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Query.listTraits.req.vtl"
+            }
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": [
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+            {
+              "S3DeploymentBucket": {
+                "Ref": "S3DeploymentBucket"
+              },
+              "S3DeploymentRootKey": {
+                "Ref": "S3DeploymentRootKey"
+              },
+              "ResolverFileName": "Query.listTraits.res.vtl"
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "RelationalDatabaseDataSource"
+      ]
+    }
+  }
+}
