@@ -21,13 +21,13 @@ type Mutation {
 
 type Query {
   getCategories(category_id: String!): Categories
-  listCategoriess: [Categories]
+  listCategories: [Categories]
   getCollections(collection_id: String!): Collections
-  listCollectionss: [Collections]
+  listCollections: [Collections]
   getProjects(project_id: String!): Projects
-  listProjectss: [Projects]
+  listProjects: [Projects]
   getTraits(trait_id: String!): Traits
-  listTraitss: [Traits]
+  listTraits: [Traits]
 }
 
 type Subscription {

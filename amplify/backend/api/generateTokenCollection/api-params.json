@@ -1,0 +1,38 @@
+{
+  "paths": [
+    {
+      "name": "/generateTokenCollection",
+      "lambdaFunction": "GenerateTokenCollection",
+      "privacy": {
+        "private": true,
+        "auth": [
+          "/POST"
+        ]
+      },
+      "policyResourceName": "/generateTokenCollection"
+    }
+  ],
+  "resourceName": "generateTokenCollection",
+  "apiName": "generateTokenCollection",
+  "functionArns": [
+    {
+      "lambdaFunction": "GenerateTokenCollection"
+    }
+  ],
+  "privacy": {
+    "auth": 1,
+    "unauth": 0,
+    "authRoleName": "amplify-cipherlaunchweb-dev-174328-authRole",
+    "unAuthRoleName": "amplify-cipherlaunchweb-dev-174328-unauthRole"
+  },
+  "dependsOn": [
+    {
+      "category": "function",
+      "resourceName": "GenerateTokenCollection",
+      "attributes": [
+        "Name",
+        "Arn"
+      ]
+    }
+  ]
+}
