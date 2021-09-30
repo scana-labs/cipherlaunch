@@ -21,6 +21,16 @@ export const listCategories = /* GraphQL */ `
     }
   }
 `;
+export const listCategoriesUnderProject = /* GraphQL */ `
+  query ListCategoriesUnderProject($project_id: String!) {
+    listCategoriesUnderProject(project_id: $project_id) {
+      category_id
+      name
+      rank
+      project_id
+    }
+  }
+`;
 export const getCollections = /* GraphQL */ `
   query GetCollections($collection_id: String!) {
     getCollections(collection_id: $collection_id) {
@@ -57,6 +67,15 @@ export const listProjects = /* GraphQL */ `
     }
   }
 `;
+export const listProjectsUnderUser = /* GraphQL */ `
+  query ListProjectsUnderUser($user_id: String!) {
+    listProjectsUnderUser(user_id: $user_id) {
+      project_id
+      user_id
+      name
+    }
+  }
+`;
 export const getTraits = /* GraphQL */ `
   query GetTraits($trait_id: String!) {
     getTraits(trait_id: $trait_id) {
@@ -72,6 +91,18 @@ export const getTraits = /* GraphQL */ `
 export const listTraits = /* GraphQL */ `
   query ListTraits {
     listTraits {
+      trait_id
+      name
+      rarity
+      bucket_url
+      category_id
+      project_id
+    }
+  }
+`;
+export const listTraitsUnderCategory = /* GraphQL */ `
+  query ListTraitsUnderCategory($category_id: String!) {
+    listTraitsUnderCategory(category_id: $category_id) {
       trait_id
       name
       rarity

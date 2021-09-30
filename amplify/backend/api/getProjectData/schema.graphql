@@ -22,12 +22,15 @@ type Mutation {
 type Query {
   getCategories(category_id: String!): Categories
   listCategories: [Categories]
+  listCategoriesUnderProject(project_id: String!): [Categories]
   getCollections(collection_id: String!): Collections
   listCollections: [Collections]
   getProjects(project_id: String!): Projects
   listProjects: [Projects]
+  listProjectsUnderUser(user_id: String!): [Projects]
   getTraits(trait_id: String!): Traits
   listTraits: [Traits]
+  listTraitsUnderCategory(category_id: String!): [Traits]
 }
 
 type Subscription {
