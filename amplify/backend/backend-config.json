@@ -16,20 +16,6 @@
         }
       },
       "rdsInit": true
-    },
-    "generateTokenCollection": {
-      "service": "API Gateway",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [
-        {
-          "category": "function",
-          "resourceName": "GenerateTokenCollection",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
-        }
-      ]
     }
   },
   "function": {
