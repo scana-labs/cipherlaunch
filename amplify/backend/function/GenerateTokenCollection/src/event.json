@@ -1,1 +1,5 @@
-{ "test": "event" }
+{
+  "httpMethod": "POST",
+  "path": "/projectId",
+
+}
