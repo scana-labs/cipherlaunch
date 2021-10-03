@@ -45,5 +45,11 @@
             "UnauthRole",
             "Arn"
         ]
-    }
+    },
+    "hostedUI": false,
+    "useDefault": "default",
+    "userPoolGroupList": [],
+    "serviceName": "Cognito",
+    "dependsOn": [],
+    "authProviders": []
 }
