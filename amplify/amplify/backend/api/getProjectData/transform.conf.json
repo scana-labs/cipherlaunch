@@ -1,0 +1,17 @@
+{
+    "Version": 5,
+    "ElasticsearchWarning": true,
+    "StackMapping": {
+        "TodoTable": "Todo 2",
+        "TodoIAMRole": "Todo 2",
+        "TodoDataSource": "Todo 2",
+        "GetTodoResolver": "Todo 2",
+        "ListTodoResolver": "Todo 2",
+        "CreateTodoResolver": "Todo 2",
+        "UpdateTodoResolver": "Todo 2",
+        "DeleteTodoResolver": "Todo 2",
+        "GetAttTodoTableStreamArn": "Todo 2",
+        "GetAttTodoDataSourceName": "Todo 2",
+        "GetAttTodoTableName": "Todo 2"
+    }
+}

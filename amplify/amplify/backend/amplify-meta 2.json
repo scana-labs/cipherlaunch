@@ -1,0 +1,128 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-cipherlaunchweb-dev-174328-authRole",
+      "UnauthRoleArn": "arn:aws:iam::342243318645:role/amplify-cipherlaunchweb-dev-174328-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::342243318645:role/amplify-cipherlaunchweb-dev-174328-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-cipherlaunchweb-dev-174328-deployment",
+      "UnauthRoleName": "amplify-cipherlaunchweb-dev-174328-unauthRole",
+      "StackName": "amplify-cipherlaunchweb-dev-174328",
+      "StackId": "arn:aws:cloudformation:us-west-2:342243318645:stack/amplify-cipherlaunchweb-dev-174328/c59a1300-1e62-11ec-a1cd-0a540734c593",
+      "AmplifyAppId": "d1k76an8if69t9",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-cipherlaunchweb-dev-174328-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
+    }
+  },
+  "api": {
+    "getProjectData": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "API_KEY",
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 7,
+              "description": "access project data in Aurora"
+            }
+          },
+          "additionalAuthenticationProviders": []
+        },
+        "GraphQLAPIIdOutput": "6wyugegjznatrpzn3cr4cowzie",
+        "GraphQLAPIEndpointOutput": "https://3hlo5dn5yrctpizup7ufiqwmue.appsync-api.us-west-2.amazonaws.com/graphql",
+        "GraphQLAPIKeyOutput": "da2-puintzkmmrci5ceqhlpd35peey"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-cipherlaunchweb-dev-174328-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "logicalId": "apigetProjectData"
+      },
+      "lastPushTimeStamp": "2021-09-30T04:02:43.901Z",
+      "lastPushDirHash": "vkNewraY3p1JVBFfV5GHP6GkfoU="
+    },
+    "generateTokenCollection": {
+      "service": "API Gateway",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "function",
+          "resourceName": "GenerateTokenCollection",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        }
+      ],
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-cipherlaunchweb-dev-174328-deployment/amplify-cfn-templates/api/generateTokenCollection-cloudformation-template.json",
+        "logicalId": "apigenerateTokenCollection"
+      },
+      "lastPushTimeStamp": "2021-09-30T04:02:39.930Z",
+      "output": {
+        "ApiName": "generateTokenCollection",
+        "RootUrl": "https://5slafy159e.execute-api.us-west-2.amazonaws.com/dev",
+        "ApiId": "5slafy159e"
+      },
+      "lastPushDirHash": "DHH7TVTcusMYMxW/kv5a+/a7NHA="
+    }
+  },
+  "function": {
+    "GenerateTokenCollection": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "api",
+          "resourceName": "getProjectData",
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput",
+            "GraphQLAPIKeyOutput"
+          ]
+        }
+      ],
+      "lastBuildTimeStamp": "2021-09-29T05:45:57.737Z",
+      "lastBuildType": "PROD",
+      "lastPackageTimeStamp": "2021-09-29T05:46:02.837Z",
+      "distZipFilename": "GenerateTokenCollection-367952545a2b38635853-build.zip",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-cipherlaunchweb-dev-174328-deployment",
+        "s3Key": "amplify-builds/GenerateTokenCollection-367952545a2b38635853-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-cipherlaunchweb-dev-174328-deployment/amplify-cfn-templates/function/GenerateTokenCollection-cloudformation-template.json",
+        "logicalId": "functionGenerateTokenCollection"
+      },
+      "lastPushTimeStamp": "2021-09-30T04:02:39.935Z",
+      "output": {
+        "Region": "us-west-2",
+        "Arn": "arn:aws:lambda:us-west-2:342243318645:function:GenerateTokenCollection-dev",
+        "Name": "GenerateTokenCollection-dev",
+        "LambdaExecutionRole": "cipherlaunchwebLambdaRole324dfaad-dev"
+      },
+      "lastPushDirHash": "6yRTZ+8cXSsRsf/Pwq4w2YmHEWg="
+    }
+  },
+  "auth": {
+    "cognito8d64442b": {
+      "service": "Cognito",
+      "serviceType": "managed",
+      "providerPlugin": "awscloudformation",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-cipherlaunchweb-dev-174328-deployment/amplify-cfn-templates/auth/cognito8d64442b-cloudformation-template.yml",
+        "logicalId": "authcognito8d64442b"
+      },
+      "lastPushTimeStamp": "2021-09-30T04:02:39.941Z",
+      "output": {
+        "UserPoolId": "us-west-2_UOlsqyFhL",
+        "AppClientIDWeb": "3uqqsb6ltdi9379dn6jvmhvg1s",
+        "AppClientID": "4pbv35nu4cjq5rcc3nr8ihhs5f",
+        "IdentityPoolId": "us-west-2:e55be67d-d80c-4a4b-b383-d2c984035819",
+        "UserPoolArn": "arn:aws:cognito-idp:us-west-2:342243318645:userpool/us-west-2_UOlsqyFhL",
+        "IdentityPoolName": "cipherlaunchweb_identitypool_8d64442b__dev",
+        "UserPoolName": "cipherlaunchweb_userpool_8d64442b"
+      },
+      "lastPushDirHash": "jAnrdkomqUQhjc+ZmaNtTKHeYlk="
+    }
+  }
+}

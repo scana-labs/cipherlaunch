@@ -1,0 +1,9 @@
+#set( $updateList = {} )
+#foreach( $entry in $ctx.args.updateTraitsInput.keySet() )
+  #set( $discard = $updateList.put($entry, "'$ctx.args.updateTraitsInput[$entry]'") )
+#end
+#set( $update = $updateList.toString().replace("{","").replace("}","") )
+{
+  "version": "2018-05-29",
+  "statements":   ["UPDATE Traits SET $update WHERE trait_id='$ctx.args.updateTraitsInput.trait_id'", "SELECT * FROM Traits WHERE trait_id='$ctx.args.updateTraitsInput.trait_id'"]
+}

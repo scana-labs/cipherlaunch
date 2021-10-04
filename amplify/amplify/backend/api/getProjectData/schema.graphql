@@ -1,0 +1,125 @@
+type Mutation {
+  deleteCategories(category_id: String!): Categories
+  createCategories(createCategoriesInput: CreateCategoriesInput!): Categories
+  updateCategories(updateCategoriesInput: UpdateCategoriesInput!): Categories
+  deleteCollections(collection_id: String!): Collections
+  createCollections(createCollectionsInput: CreateCollectionsInput!): Collections
+  updateCollections(updateCollectionsInput: UpdateCollectionsInput!): Collections
+  deleteProjects(project_id: String!): Projects
+  createProjects(createProjectsInput: CreateProjectsInput!): Projects
+  updateProjects(updateProjectsInput: UpdateProjectsInput!): Projects
+  deleteTraits(trait_id: String!): Traits
+  createTraits(createTraitsInput: CreateTraitsInput!): Traits
+  updateTraits(updateTraitsInput: UpdateTraitsInput!): Traits
+}
+
+type Query {
+  getCategories(category_id: String!): Categories
+  listCategories: [Categories]
+  listCategoriesUnderProject(project_id: String!): [Categories]
+  getCollections(collection_id: String!): Collections
+  listCollections: [Collections]
+  getProjects(project_id: String!): Projects
+  listProjects: [Projects]
+  listProjectsUnderUser(user_id: String!): [Projects]
+  getTraits(trait_id: String!): Traits
+  listTraits: [Traits]
+  listTraitsUnderCategory(category_id: String!): [Traits]
+}
+
+type Subscription {
+  onCreateCategories: Categories @aws_subscribe(mutations: ["createCategories"])
+  onCreateCollections: Collections @aws_subscribe(mutations: ["createCollections"])
+  onCreateProjects: Projects @aws_subscribe(mutations: ["createProjects"])
+  onCreateTraits: Traits @aws_subscribe(mutations: ["createTraits"])
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+input CreateCategoriesInput {
+  category_id: String!
+  name: String!
+  rank: Int!
+  project_id: String!
+}
+
+type Categories {
+  category_id: String!
+  name: String!
+  rank: Int!
+  project_id: String!
+}
+
+input UpdateCategoriesInput {
+  category_id: String!
+  name: String
+  rank: Int
+  project_id: String
+}
+
+input CreateCollectionsInput {
+  collection_id: String!
+  project_id: String!
+  bucket_url: String!
+}
+
+type Collections {
+  collection_id: String!
+  project_id: String!
+  bucket_url: String!
+}
+
+input UpdateCollectionsInput {
+  collection_id: String!
+  project_id: String
+  bucket_url: String
+}
+
+input CreateProjectsInput {
+  project_id: String!
+  user_id: String!
+  name: String!
+}
+
+type Projects {
+  project_id: String!
+  user_id: String!
+  name: String!
+}
+
+input UpdateProjectsInput {
+  project_id: String!
+  user_id: String
+  name: String
+}
+
+input CreateTraitsInput {
+  trait_id: String!
+  name: String!
+  rarity: String!
+  bucket_url: String!
+  category_id: String
+  project_id: String!
+}
+
+type Traits {
+  trait_id: String!
+  name: String!
+  rarity: String!
+  bucket_url: String!
+  category_id: String
+  project_id: String!
+}
+
+input UpdateTraitsInput {
+  trait_id: String!
+  name: String
+  rarity: String
+  bucket_url: String
+  category_id: String
+  project_id: String
+}
