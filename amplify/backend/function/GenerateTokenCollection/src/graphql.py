@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import requests
 from requests_aws4auth import AWS4Auth
@@ -11,6 +12,9 @@ session.auth = AWS4Auth(
     'appsync'
 )
 GRAPHQL_API_ENDPOINT = os.environ["API_GETPROJECTDATA_GRAPHQLAPIENDPOINTOUTPUT"]
+
+logger = logging.getLogger(__name__)
+
 
 
 def get_categories_under_project(project_id):
@@ -68,6 +72,7 @@ def run_graphql_query(query, variables):
     json_response = json.loads(response.text)
     if "errors" in json_response.keys():
         errors = json_response["errors"]
-        raise Exception(f"Error with request: {errors}")
+        logger.error(f"Error with request: {errors}")
+        raise Exception(f"GraphQL Request failure")
     else:
         return json_response["data"]

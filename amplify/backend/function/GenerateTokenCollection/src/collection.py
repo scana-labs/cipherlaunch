@@ -8,10 +8,12 @@ from token import Token
 from urllib.parse import urlparse
 import boto3
 import json
+import logging
 import os
 import random
 
 s3_client = boto3.client("s3")
+logger = logging.getLogger(__name__)
 
 
 class Collection:
@@ -61,7 +63,13 @@ class Collection:
                 }
             )
         if create_bucket_response['ResponseMetadata']['HTTPStatusCode'] != 200:
+            status_code = create_bucket_response['ResponseMetadata']['HTTPStatusCode']
+            logger.error(
+                f"Received status code {status_code} when attempting to create bucket {self.collection_bucket_name}"
+            )
             raise Exception(f"Failed to create bucket {self.collection_bucket_name}")
+
+        logger.debug(f"Created S3 Bucket with name {self.collection_bucket_name}")
 
         # Trait generation.
         random.seed(42)
@@ -90,14 +98,21 @@ class Collection:
         # Write each item's metadata to a separate metadata file.
         for token in tokens:
             metadata_bytes = bytes(json.dumps(token.metadata()).encode('UTF-8'))
+            key = f"metadata/{token.token_id}.json"
             metadata_upload_response = s3_client.put_object(
                 Bucket=self.collection_bucket_name,
-                Key=f"metadata/{token.token_id}.json",
+                Key=key,
                 Body=metadata_bytes
             )
             if metadata_upload_response['ResponseMetadata']['HTTPStatusCode'] != 200:
-                raise Exception(f"Failed to upload metadata for token_id ${token.token_id} to bucket " +
+                status_code = create_bucket_response['ResponseMetadata']['HTTPStatusCode']
+                logger.error(
+                    f"Received status code {status_code} when attempting to put object to bucket " +
+                    f"{self.collection_bucket_name} and key {key}"
+                )
+                raise Exception(f"Failed to upload metadata for token_id {token.token_id} to bucket " +
                                 f"{self.collection_bucket_name}")
+            logger.debug(f"Uploaded metadata for token_id {token.token_id} to {key}")
 
         # Image generation.
         for token in tokens:
@@ -134,6 +149,13 @@ class Collection:
         buffer = BytesIO()
         img.save(buffer)
         buffer.seek(0)
-        image_upload_response = s3_client.put_object(Bucket=self.collection_bucket_name, Key=f"tokens/{token_id}.json")
+        key = f"tokens/{token_id}.json"
+        image_upload_response = s3_client.put_object(Bucket=self.collection_bucket_name, Key=key)
         if image_upload_response['ResponseMetadata']['HTTPStatusCode'] != 200:
+            status_code = image_upload_response['ResponseMetadata']['HTTPStatusCode']
+            logger.error(
+                f"Received status code {status_code} when attempting to put object to bucket " +
+                f"{self.collection_bucket_name} and key {key}"
+            )
             raise Exception(f"Failed to upload image for token {token_id} to bucket {self.collection_bucket_name}")
+        logger.debug(f"Uploaded image to bucket {self.collection_bucket_name} and key {key}")
