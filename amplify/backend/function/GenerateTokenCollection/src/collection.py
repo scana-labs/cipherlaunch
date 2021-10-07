@@ -4,7 +4,7 @@ from graphql import get_categories_under_project, get_traits_under_category, cre
 from io import BytesIO
 from PIL import Image
 from uuid import uuid4
-from token import Token
+from token_item import Token
 from urllib.parse import urlparse
 import boto3
 import json
@@ -13,7 +13,9 @@ import os
 import random
 
 s3_client = boto3.client("s3")
+
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class Collection:
@@ -22,7 +24,7 @@ class Collection:
         self.project_id = project_id
         self.categories = self.get_project_categories()  # list of categories in order of ascending rank number
         self.category_trait_rarities, self.trait_images = self.get_metadata_maps()
-        self.collection_id = uuid4()
+        self.collection_id = str(uuid4())
         self.collection_bucket_name = "_".join(["tc", self.collection_id])
 
     def get_project_categories(self):
@@ -52,7 +54,7 @@ class Collection:
         if total_possible < total_tokens:
             raise Exception(f'Not enough traits to generate {total_tokens} tokens, only {total_possible} possible')
         elif total_possible * 0.8 <= total_tokens:
-            print(f'Barely enough traits to generate {total_tokens} tokens, may take a while')
+            print(f'Barely enough traits to generate {total_tokens} tokens, so may take a while')
 
         # Create necessary output folders.
         create_bucket_response \

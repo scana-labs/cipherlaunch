@@ -100,7 +100,7 @@ input UpdateProjectsInput {
 input CreateTraitsInput {
   trait_id: String!
   name: String!
-  rarity: String!
+  rarity: Float!
   bucket_url: String!
   category_id: String
   project_id: String!
@@ -109,7 +109,7 @@ input CreateTraitsInput {
 type Traits {
   trait_id: String!
   name: String!
-  rarity: String!
+  rarity: Float!
   bucket_url: String!
   category_id: String
   project_id: String!
@@ -118,7 +118,7 @@ type Traits {
 input UpdateTraitsInput {
   trait_id: String!
   name: String
-  rarity: String
+  rarity: Float
   bucket_url: String
   category_id: String
   project_id: String
