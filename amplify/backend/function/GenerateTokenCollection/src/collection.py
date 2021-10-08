@@ -31,7 +31,7 @@ class Collection:
         return get_categories_under_project(self.project_id)
 
     def get_metadata_maps(self):
-        categories_traits = {}
+        categories_traits = {} #TODO: Rename
         trait_images = {}
         for category in self.categories:
             traits = []
@@ -41,7 +41,7 @@ class Collection:
                 traits.append(trait["name"])
                 rarities.append(trait["rarity"])
                 trait_images[trait["name"]] = trait["bucket_url"]
-            category_traits[category["name"]] = (traits, rarities)
+            categories_traits[category["name"]] = (traits, rarities)
         return categories_traits, trait_images
 
     def generate_tokens(self, total_tokens, token_id_offset=0):
