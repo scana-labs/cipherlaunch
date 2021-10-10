@@ -103,7 +103,8 @@
         "Layers": [
           "arn:aws:lambda:us-west-2:770693421928:layer:Klayers-python38-Pillow:13"
         ],
-        "Timeout": 25
+        "Timeout": 300,
+        "MemorySize": 512
       }
     },
     "LambdaExecutionRole": {
@@ -183,6 +184,15 @@
                   }
                 ]
               }
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:CreateBucket",
+                "s3:GetObject",
+                "s3:PutObject"
+              ],
+              "Resource": "arn:aws:s3:::*"
             }
           ]
         }

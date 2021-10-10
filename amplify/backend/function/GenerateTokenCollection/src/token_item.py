@@ -36,13 +36,13 @@ class Token:
                     return True
         return False
 
-    def unrevealed_metadata(self) -> Dict:
+    def unrevealed_metadata(self, project_name, base_url) -> Dict:
         return {
-            'image': f'https://thefacesfund.com/image/unrevealed.png',
-            'name': f'The Faces Fund #{self.token_id}',
+            'image': f'{base_url}unrevealed.png',
+            'name': f'{project_name} #{self.token_id}',
         }
 
-    def metadata(self) -> Dict:
+    def metadata(self,  project_name, base_url) -> Dict:
         attributes = []
         for key, val in self.token_traits.items():
             attributes.append({
@@ -51,8 +51,8 @@ class Token:
             })
 
         return {
-            'image': f'https://thefacesfund.com/image/{self.token_id}.jpg',
-            'name': f'The Faces Fund #{self.token_id}',
+            'image': f'{base_url}{self.token_id}.jpg',
+            'name': f'{project_name} #{self.token_id}',
             'attributes': attributes,
         }
 

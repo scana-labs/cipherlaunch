@@ -45,18 +45,20 @@ def get_traits_under_category(category_id):
 
 def create_new_collection(collection_id, project_id, bucket_url):
     mutation = """
-        mutation ($collection_input:CreateCollectionInput!) {
-            createCollections(collection_input: $collection_input) {
-                Collections
+        mutation ($input : CreateCollectionsInput!) {
+            createCollections(createCollectionsInput: $input) {
+                bucket_url
+                collection_id
             } 
         }  
     """
 
-    variables = {"collection_input": {
+    variables = {"input": {
         "collection_id": collection_id, "project_id": project_id, "bucket_url": bucket_url
+        }
     }
-    }
-    run_graphql_query(mutation, variables)
+    response_data = run_graphql_query(mutation, variables)
+    return response_data['createCollections']
 
 
 def run_graphql_query(query, variables):
