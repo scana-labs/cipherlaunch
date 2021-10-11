@@ -1,3 +1,5 @@
+import json
+
 from collection import Collection
 import logging
 
@@ -13,4 +15,12 @@ def handler(event, context):
     logger.debug(f"Received create token collection request for project_id {project_id} and num_tokens {num_tokens}")
 
     collection = Collection(project_id, project_name, base_url)
-    collection.generate_tokens(num_tokens)
+    token_collection = collection.generate_tokens(num_tokens)
+
+    return {
+        "statusCode": 200,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "body": json.dumps(token_collection)
+    }

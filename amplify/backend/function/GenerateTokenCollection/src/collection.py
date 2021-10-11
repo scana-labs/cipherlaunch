@@ -150,6 +150,8 @@ class Collection:
 
         logger.debug(f"Created collection with id {create_collection_id} with bucket_url {created_collection_bucket}")
 
+        return created_collection
+
     def create_token_image(self, token):
         # Create each composite.
         com_im = Image.alpha_composite(
