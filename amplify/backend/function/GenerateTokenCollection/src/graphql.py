@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import logging
 import os
@@ -54,7 +55,10 @@ def create_new_collection(collection_id, project_id, bucket_url):
     """
 
     variables = {"input": {
-        "collection_id": collection_id, "project_id": project_id, "bucket_url": bucket_url
+        "collection_id": collection_id,
+        "project_id": project_id,
+        "bucket_url": bucket_url,
+        "create_timestamp": datetime.now()
         }
     }
     response_data = run_graphql_query(mutation, variables)
