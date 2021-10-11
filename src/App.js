@@ -7,9 +7,8 @@ import {
 
 import Landing from './components/Landing'
 import Login from './components/Login'
-import NavBar from './components/NavBar'
-import Projects from './components/Projects'
-import { DEFAULT_LOGIN_ROUTE, DEFAULT_PROJECTS_ROUTE, DEFAULT_SIGNUP_ROUTE } from './constants/Routes'
+import Home from './components/Home'
+import { DEFAULT_LOGIN_ROUTE, DEFAULT_HOME_ROUTE } from './constants/Routes'
 
 import { AuthProvider, useAuth } from './auth'
 
@@ -18,10 +17,9 @@ import './App.css'
 const App = () => (
 	<AuthProvider>
 		<Router>
-			<NavBar />
 			<Switch>
-				<PrivateRoute path={DEFAULT_PROJECTS_ROUTE}>
-					<Projects />
+				<PrivateRoute path={DEFAULT_HOME_ROUTE}>
+					<Home />
 				</PrivateRoute>
 				<Route path={DEFAULT_LOGIN_ROUTE}>
 					<Login />
@@ -34,25 +32,25 @@ const App = () => (
 	</AuthProvider>
 )
 
-const PrivateRoute = ({ children, ...rest }) => {
+export const PrivateRoute = ({ children, ...rest }) => {
 	let auth = useAuth();
 	return (
-	  <Route
-		{...rest}
-		render={({ location }) =>
-		  auth.user ? (
-			children
-		  ) : (
-			<Redirect
-			  to={{
-				pathname: DEFAULT_LOGIN_ROUTE,
-				state: { from: location }
-			  }}
-			/>
-		  )
-		}
-	  />
+		<Route
+			{...rest}
+			render={({ location }) =>
+				auth.user ? (
+					children
+				) : (
+						<Redirect
+							to={{
+								pathname: DEFAULT_LOGIN_ROUTE,
+								state: { from: location }
+							}}
+						/>
+					)
+			}
+		/>
 	);
-  }
+}
 
 export default App

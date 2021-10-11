@@ -2,17 +2,17 @@ const features = [
 	{
 		name: 'Easily manage and generate assets',
 		description: 'Prototype, design, and generate your assets all in one place',
-		icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🎨</text></svg>,
+		icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" fontSize="90">🎨</text></svg>,
 	},
 	{
 		name: 'No-code smart contract',
 		description: 'We work with you to develop and deploy the smart contract you want so you can focus on what you love',
-		icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📜</text></svg>,
+		icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" fontSize="90">📜</text></svg>,
 	},
 	{
 		name: 'Managing your community',
 		description: 'Automate updates, track numbers, and integrate with your favorite community tools all in one place',
-		icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🏛</text></svg>,
+		icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" fontSize="90">🏛</text></svg>,
 	},
 ]
   

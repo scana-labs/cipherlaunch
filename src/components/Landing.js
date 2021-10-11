@@ -9,6 +9,7 @@ import './Landing.css'
 
 const Landing = () => (
 	<div className="relative bg-white overflow-hidden">
+		<NavBar />
 		<div className="flex w-screen">
 			<div className="relative w-full md:w-1/2">
 				<svg
