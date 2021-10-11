@@ -23,17 +23,7 @@
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda",
-      "dependsOn": [
-        {
-          "category": "api",
-          "resourceName": "getProjectData",
-          "attributes": [
-            "GraphQLAPIIdOutput",
-            "GraphQLAPIEndpointOutput",
-            "GraphQLAPIKeyOutput"
-          ]
-        }
-      ]
+      "dependsOn": []
     }
   },
   "auth": {
