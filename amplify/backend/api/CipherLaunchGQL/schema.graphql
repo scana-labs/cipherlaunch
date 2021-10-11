@@ -1,24 +1,3 @@
-type Blog @model {
-  id: ID!
-  name: String!
-  posts: [Post] @connection(keyName: "byBlog", fields: ["id"])
-}
-
-type Post @model @key(name: "byBlog", fields: ["blogID"]) {
-  id: ID!
-  title: String!
-  blogID: ID!
-  blog: Blog @connection(fields: ["blogID"])
-  comments: [Comment] @connection(keyName: "byPost", fields: ["id"])
-}
-
-type Comment @model @key(name: "byPost", fields: ["postID", "content"]) {
-  id: ID!
-  postID: ID!
-  post: Post @connection(fields: ["postID"])
-  content: String!
-}
-
 input CreateCategoryInput {
   category_id: String!
   name: String!
@@ -44,18 +23,21 @@ input CreateCollectionInput {
   collection_id: String!
   project_id: String!
   bucket_url: String!
+  create_timestamp: AWSTimestamp!
 }
 
 type Collection {
   collection_id: String!
   project_id: String!
   bucket_url: String!
+  create_timestamp: AWSTimestamp!
 }
 
 input UpdateCollectionInput {
   collection_id: String!
   project_id: String
   bucket_url: String
+  create_timestamp: AWSTimestamp
 }
 
 input CreateProjectInput {
@@ -121,12 +103,21 @@ type Mutation {
 type Query {
   getCategory(category_id: String!): Category
   listCategories: [Category]
+  listCategoriesUnderProject(project_id: String!): [Category]
   getCollection(collection_id: String!): Collection
   listCollections: [Collection]
   getProject(project_id: String!): Project
   listProjects: [Project]
   getTrait(trait_id: String!): Trait
   listTraits: [Trait]
+  listTraitsUnderCategory(category_id: String!): [Trait]
+  listCategorys: [Category]
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
 }
 
 type Subscription {
@@ -134,10 +125,4 @@ type Subscription {
   onCreateCollection: Collection @aws_subscribe(mutations: ["createCollection"])
   onCreateProject: Project @aws_subscribe(mutations: ["createProject"])
   onCreateTrait: Trait @aws_subscribe(mutations: ["createTrait"])
-}
-
-schema {
-  query: Query
-  mutation: Mutation
-  subscription: Subscription
 }
