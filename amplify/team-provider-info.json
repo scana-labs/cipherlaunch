@@ -12,21 +12,21 @@
       "AmplifyAppId": "d1k76an8if69t9"
     },
     "categories": {
-      "api": {
-        "getProjectData": {
-          "rdsRegion": "us-west-2",
-          "rdsClusterIdentifier": "arn:aws:rds:us-west-2:342243318645:cluster:cipherlaunch-nft-projects",
-          "rdsSecretStoreArn": "arn:aws:secretsmanager:us-west-2:342243318645:secret:rds-db-credentials/cluster-Y2XRKBW6ND4DWUYHYMB4ZNZZZM/admin-CpGVzM",
-          "rdsDatabaseName": "Projects"
-        }
-      },
       "auth": {
         "cognito8d64442b": {}
       },
       "function": {
         "GenerateTokenCollection": {
           "deploymentBucketName": "amplify-cipherlaunchweb-dev-174328-deployment",
-          "s3Key": "amplify-builds/GenerateTokenCollection-6747302f7170516a5a4b-build.zip"
+          "s3Key": "amplify-builds/GenerateTokenCollection-756633394f6371497154-build.zip"
+        }
+      },
+      "api": {
+        "CipherLaunchGQL": {
+          "rdsRegion": "us-west-2",
+          "rdsClusterIdentifier": "arn:aws:rds:us-west-2:342243318645:cluster:cipherlaunch-nft-projects",
+          "rdsSecretStoreArn": "arn:aws:secretsmanager:us-west-2:342243318645:secret:rds-db-credentials/cluster-Y2XRKBW6ND4DWUYHYMB4ZNZZZM/admin-CpGVzM",
+          "rdsDatabaseName": "Projects"
         }
       }
     }

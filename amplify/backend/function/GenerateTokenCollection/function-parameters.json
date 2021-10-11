@@ -1,16 +1,16 @@
 {
-  "permissions": {
-    "api": {
-      "getProjectData": [
-        "Query",
-        "Mutation"
-      ]
-    }
-  },
   "lambdaLayers": [
     {
       "type": "ExternalLayer",
       "arn": "arn:aws:lambda:us-west-2:770693421928:layer:Klayers-python38-Pillow:13"
     }
-  ]
+  ],
+  "permissions": {
+    "api": {
+      "CipherLaunchGQL": [
+        "Query",
+        "Mutation"
+      ]
+    }
+  }
 }

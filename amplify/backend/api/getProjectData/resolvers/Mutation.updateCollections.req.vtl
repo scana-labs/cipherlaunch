@@ -1,9 +1,0 @@
-#set( $updateList = {} )
-#foreach( $entry in $ctx.args.updateCollectionsInput.keySet() )
-  #set( $discard = $updateList.put($entry, "'$ctx.args.updateCollectionsInput[$entry]'") )
-#end
-#set( $update = $updateList.toString().replace("{","").replace("}","") )
-{
-  "version": "2018-05-29",
-  "statements":   ["UPDATE Collections SET $update WHERE collection_id='$ctx.args.updateCollectionsInput.collection_id'", "SELECT * FROM Collections WHERE collection_id='$ctx.args.updateCollectionsInput.collection_id'"]
-}

@@ -1,0 +1,143 @@
+type Blog @model {
+  id: ID!
+  name: String!
+  posts: [Post] @connection(keyName: "byBlog", fields: ["id"])
+}
+
+type Post @model @key(name: "byBlog", fields: ["blogID"]) {
+  id: ID!
+  title: String!
+  blogID: ID!
+  blog: Blog @connection(fields: ["blogID"])
+  comments: [Comment] @connection(keyName: "byPost", fields: ["id"])
+}
+
+type Comment @model @key(name: "byPost", fields: ["postID", "content"]) {
+  id: ID!
+  postID: ID!
+  post: Post @connection(fields: ["postID"])
+  content: String!
+}
+
+input CreateCategoryInput {
+  category_id: String!
+  name: String!
+  rank: Int!
+  project_id: String!
+}
+
+type Category {
+  category_id: String!
+  name: String!
+  rank: Int!
+  project_id: String!
+}
+
+input UpdateCategoryInput {
+  category_id: String!
+  name: String
+  rank: Int
+  project_id: String
+}
+
+input CreateCollectionInput {
+  collection_id: String!
+  project_id: String!
+  bucket_url: String!
+}
+
+type Collection {
+  collection_id: String!
+  project_id: String!
+  bucket_url: String!
+}
+
+input UpdateCollectionInput {
+  collection_id: String!
+  project_id: String
+  bucket_url: String
+}
+
+input CreateProjectInput {
+  project_id: String!
+  user_id: String!
+  name: String!
+}
+
+type Project {
+  project_id: String!
+  user_id: String!
+  name: String!
+}
+
+input UpdateProjectInput {
+  project_id: String!
+  user_id: String
+  name: String
+}
+
+input CreateTraitInput {
+  trait_id: String!
+  name: String!
+  rarity: Float
+  bucket_url: String!
+  category_id: String
+  project_id: String!
+}
+
+type Trait {
+  trait_id: String!
+  name: String!
+  rarity: Float
+  bucket_url: String!
+  category_id: String
+  project_id: String!
+}
+
+input UpdateTraitInput {
+  trait_id: String!
+  name: String
+  rarity: Float
+  bucket_url: String
+  category_id: String
+  project_id: String
+}
+
+type Mutation {
+  deleteCategory(category_id: String!): Category
+  createCategory(createCategoryInput: CreateCategoryInput!): Category
+  updateCategory(updateCategoryInput: UpdateCategoryInput!): Category
+  deleteCollection(collection_id: String!): Collection
+  createCollection(createCollectionInput: CreateCollectionInput!): Collection
+  updateCollection(updateCollectionInput: UpdateCollectionInput!): Collection
+  deleteProject(project_id: String!): Project
+  createProject(createProjectInput: CreateProjectInput!): Project
+  updateProject(updateProjectInput: UpdateProjectInput!): Project
+  deleteTrait(trait_id: String!): Trait
+  createTrait(createTraitInput: CreateTraitInput!): Trait
+  updateTrait(updateTraitInput: UpdateTraitInput!): Trait
+}
+
+type Query {
+  getCategory(category_id: String!): Category
+  listCategories: [Category]
+  getCollection(collection_id: String!): Collection
+  listCollections: [Collection]
+  getProject(project_id: String!): Project
+  listProjects: [Project]
+  getTrait(trait_id: String!): Trait
+  listTraits: [Trait]
+}
+
+type Subscription {
+  onCreateCategory: Category @aws_subscribe(mutations: ["createCategory"])
+  onCreateCollection: Collection @aws_subscribe(mutations: ["createCollection"])
+  onCreateProject: Project @aws_subscribe(mutations: ["createProject"])
+  onCreateTrait: Trait @aws_subscribe(mutations: ["createTrait"])
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}

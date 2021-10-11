@@ -16,17 +16,17 @@
     "s3Key": {
       "Type": "String"
     },
-    "apigetProjectDataGraphQLAPIIdOutput": {
+    "apiCipherLaunchGQLGraphQLAPIIdOutput": {
       "Type": "String",
-      "Default": "apigetProjectDataGraphQLAPIIdOutput"
+      "Default": "apiCipherLaunchGQLGraphQLAPIIdOutput"
     },
-    "apigetProjectDataGraphQLAPIEndpointOutput": {
+    "apiCipherLaunchGQLGraphQLAPIEndpointOutput": {
       "Type": "String",
-      "Default": "apigetProjectDataGraphQLAPIEndpointOutput"
+      "Default": "apiCipherLaunchGQLGraphQLAPIEndpointOutput"
     },
-    "apigetProjectDataGraphQLAPIKeyOutput": {
+    "apiCipherLaunchGQLGraphQLAPIKeyOutput": {
       "Type": "String",
-      "Default": "apigetProjectDataGraphQLAPIKeyOutput"
+      "Default": "apiCipherLaunchGQLGraphQLAPIKeyOutput"
     }
   },
   "Conditions": {
@@ -82,14 +82,14 @@
             "REGION": {
               "Ref": "AWS::Region"
             },
-            "API_GETPROJECTDATA_GRAPHQLAPIIDOUTPUT": {
-              "Ref": "apigetProjectDataGraphQLAPIIdOutput"
+            "API_CIPHERLAUNCHGQL_GRAPHQLAPIIDOUTPUT": {
+              "Ref": "apiCipherLaunchGQLGraphQLAPIIdOutput"
             },
-            "API_GETPROJECTDATA_GRAPHQLAPIENDPOINTOUTPUT": {
-              "Ref": "apigetProjectDataGraphQLAPIEndpointOutput"
+            "API_CIPHERLAUNCHGQL_GRAPHQLAPIENDPOINTOUTPUT": {
+              "Ref": "apiCipherLaunchGQLGraphQLAPIEndpointOutput"
             },
-            "API_GETPROJECTDATA_GRAPHQLAPIKEYOUTPUT": {
-              "Ref": "apigetProjectDataGraphQLAPIKeyOutput"
+            "API_CIPHERLAUNCHGQL_GRAPHQLAPIKEYOUTPUT": {
+              "Ref": "apiCipherLaunchGQLGraphQLAPIKeyOutput"
             }
           }
         },
@@ -113,12 +113,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "cipherlaunchwebLambdaRole324dfaad",
+            "cipherlaunchLambdaRole96be26e7",
             {
               "Fn::Join": [
                 "",
                 [
-                  "cipherlaunchwebLambdaRole324dfaad",
+                  "cipherlaunchLambdaRole96be26e7",
                   "-",
                   {
                     "Ref": "env"
@@ -233,7 +233,7 @@
                       },
                       ":apis/",
                       {
-                        "Ref": "apigetProjectDataGraphQLAPIIdOutput"
+                        "Ref": "apiCipherLaunchGQLGraphQLAPIIdOutput"
                       },
                       "/types/Query/*"
                     ]
@@ -253,7 +253,7 @@
                       },
                       ":apis/",
                       {
-                        "Ref": "apigetProjectDataGraphQLAPIIdOutput"
+                        "Ref": "apiCipherLaunchGQLGraphQLAPIIdOutput"
                       },
                       "/types/Mutation/*"
                     ]
