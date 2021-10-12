@@ -57,6 +57,7 @@ export const getProject = /* GraphQL */ `
       project_id
       user_id
       name
+      create_timestamp
     }
   }
 `;
@@ -66,6 +67,7 @@ export const listProjects = /* GraphQL */ `
       project_id
       user_id
       name
+      create_timestamp
     }
   }
 `;

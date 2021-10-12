@@ -44,18 +44,21 @@ input CreateProjectInput {
   project_id: String!
   user_id: String!
   name: String!
+  create_timestamp: AWSTimestamp!
 }
 
 type Project {
   project_id: String!
   user_id: String!
   name: String!
+  create_timestamp: AWSTimestamp!
 }
 
 input UpdateProjectInput {
   project_id: String!
   user_id: String
   name: String
+  create_timestamp: AWSTimestamp
 }
 
 input CreateTraitInput {

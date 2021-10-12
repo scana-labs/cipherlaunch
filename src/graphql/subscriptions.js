@@ -27,6 +27,7 @@ export const onCreateProject = /* GraphQL */ `
       project_id
       user_id
       name
+      create_timestamp
     }
   }
 `;

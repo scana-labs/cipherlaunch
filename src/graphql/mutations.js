@@ -67,6 +67,7 @@ export const deleteProject = /* GraphQL */ `
       project_id
       user_id
       name
+      create_timestamp
     }
   }
 `;
@@ -76,6 +77,7 @@ export const createProject = /* GraphQL */ `
       project_id
       user_id
       name
+      create_timestamp
     }
   }
 `;
@@ -85,6 +87,7 @@ export const updateProject = /* GraphQL */ `
       project_id
       user_id
       name
+      create_timestamp
     }
   }
 `;
