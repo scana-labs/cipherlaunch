@@ -21,7 +21,7 @@ import MenuItems from './MenuItems'
 import { createProject, deleteProject } from '../graphql/mutations'
 import { listProjects } from '../graphql/queries'
 import { useAuth } from '../auth'
-import { DEFAULT_COLLECTIONS_ROUTE } from '../constants/Routes';
+import { DEFAULT_COLLECTIONS_ROUTE, DEFAULT_HOME_ROUTE } from '../constants/Routes';
 
 function classNames(...classes) {
 	return classes.filter(Boolean).join(' ')
@@ -91,8 +91,9 @@ const Projects = ({ setSidebarOpen }) => {
 				project_id: `${projects.length + 1}`,
 				user_id: '1',
 				name: projectName,
+				create_timestamp: new Date().toISOString(), // TODO: This should be done in a resolver
 			}
-			await API.graphql(graphqlOperation(createProject, { input: newProject }))
+			// await API.graphql(graphqlOperation(createProject, { input: newProject }))
 			setProjects([...projects, newLocalProject])
 		}
 		catch (e) {
@@ -171,12 +172,6 @@ const Projects = ({ setSidebarOpen }) => {
 					<div className="mt-4 flex sm:mt-0 sm:ml-4">
 						<button
 							type="button"
-							className="order-1 ml-3 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:order-0 sm:ml-0"
-						>
-							Share
-						</button>
-						<button
-							type="button"
 							className="order-0 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:order-1 sm:ml-3"
 							onClick={() => setModalOpen(true)}
 						>
@@ -251,12 +246,12 @@ const Projects = ({ setSidebarOpen }) => {
 											<div className="flex items-center space-x-2">
 												<div className="flex flex-shrink-0 -space-x-1">
 													{project.members.map((member) => (
-														<img
+														<span
 															key={member.handle}
-															className="max-w-none h-6 w-6 rounded-full ring-2 ring-white"
-															src={member.imageUrl}
-															alt={member.name}
-														/>
+															className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-gray-500"
+														>
+															<span className="text-xl font-medium leading-none text-white">{member.name[0] || ''}</span>
+														</span>
 													))}
 												</div>
 												{project.totalMembers > project.members.length ? (
@@ -289,7 +284,7 @@ const Projects = ({ setSidebarOpen }) => {
 															<Menu.Item>
 																{({ active }) => (
 																	<a
-																		href="/"
+																		href={DEFAULT_HOME_ROUTE}
 																		className={classNames(
 																			active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
 																			'group flex items-center px-4 py-2 text-sm'
@@ -306,7 +301,7 @@ const Projects = ({ setSidebarOpen }) => {
 															<Menu.Item>
 																{({ active }) => (
 																	<a
-																		href="/"
+																		href={DEFAULT_HOME_ROUTE}
 																		className={classNames(
 																			active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
 																			'group flex items-center px-4 py-2 text-sm'
@@ -323,7 +318,7 @@ const Projects = ({ setSidebarOpen }) => {
 															<Menu.Item>
 																{({ active }) => (
 																	<a
-																		href="/"
+																		href={DEFAULT_HOME_ROUTE}
 																		className={classNames(
 																			active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
 																			'group flex items-center px-4 py-2 text-sm'
@@ -342,7 +337,7 @@ const Projects = ({ setSidebarOpen }) => {
 															<Menu.Item>
 																{({ active }) => (
 																	<a
-																		href="/"
+																		href={DEFAULT_HOME_ROUTE}
 																		className={classNames(
 																			active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
 																			'group flex items-center px-4 py-2 text-sm'

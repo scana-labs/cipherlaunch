@@ -5,13 +5,16 @@ import {
 	SearchIcon,
 	SelectorIcon,
 } from '@heroicons/react/solid'
+import { AmplifySignOut } from '@aws-amplify/ui-react'
+import { Link } from 'react-router-dom'
 
 import { useAuth } from '../auth'
 import MenuItems from './MenuItems'
+import { DEFAULT_HOME_ROUTE } from '../constants/Routes'
 
 
 const navigation = [
-	{ name: 'Home', href: '#', icon: HomeIcon, current: true },
+	{ name: 'Home', href: DEFAULT_HOME_ROUTE, icon: HomeIcon, current: true },
 ]
 
 function classNames(...classes) {
@@ -67,12 +70,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 								</div>
 							</Transition.Child>
 							<div className="mt-5 flex-1 h-0 overflow-y-auto">
-								<nav className="px-2">
+								<nav className="h-full flex px-2 flex-col justify-between">
 									<div className="space-y-1">
 										{navigation.map((item) => (
-											<a
+											<Link
 												key={item.name}
-												href={item.href}
+												to={item.href}
 												className={classNames(
 													item.current
 														? 'bg-gray-100 text-gray-900'
@@ -89,8 +92,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 													aria-hidden="true"
 												/>
 												{item.name}
-											</a>
+											</Link>
 										))}
+									</div>
+									<div>
+										<AmplifySignOut buttonText="Sign out"></AmplifySignOut>
 									</div>
 								</nav>
 							</div>
@@ -106,7 +112,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 			<div className="hidden lg:flex lg:flex-shrink-0">
 				<div className="flex flex-col w-64 border-r border-gray-200 pt-5 pb-4 bg-gray-100">
 					<div className="flex items-center flex-shrink-0 px-6">
-						<div className="text-xl text-red-500">Cipherlaunch</div>
+						<Link to="/">
+							<div className="text-xl text-red-500">Cipherlaunch</div>
+						</Link>
 					</div>
 					{/* Sidebar component, swap this element with another sidebar if you like */}
 					<div className="h-0 flex-1 flex flex-col overflow-y-auto">
@@ -136,7 +144,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 						<div className="px-3 mt-5">
 							<label htmlFor="search" className="sr-only">
 								Search
-				</label>
+							</label>
 							<div className="mt-1 relative rounded-md shadow-sm">
 								<div
 									className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"

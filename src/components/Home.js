@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import {
 	Switch,
-	Route,
 	useRouteMatch,
 } from "react-router-dom";
 
+import { PrivateRoute } from '../App';
 import Projects from './Projects'
 import EditProject from './EditProject'
 import Sidebar from './Sidebar'
@@ -16,15 +16,15 @@ const Home = () => {
 
 	return (
 		<div className="relative h-screen flex bg-white">
-			<div className="h-screen w-64"></div>
+			<div className="hidden h-screen w-64 lg:block"></div>
 			<Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 			<Switch>
-				<Route exact path={path}>
+				<PrivateRoute exact path={path}>
 					<Projects setSidebarOpen={setSidebarOpen} />
-				</Route>
-				<Route path={`${path}${DEFAULT_COLLECTIONS_ROUTE}/:topicId`}>
+				</PrivateRoute>
+				<PrivateRoute path={`${path}${DEFAULT_COLLECTIONS_ROUTE}/:topicId`}>
 					<EditProject />
-				</Route>
+				</PrivateRoute>
 			</Switch>
 		</div>
 	)

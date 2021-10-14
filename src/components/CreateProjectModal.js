@@ -1,8 +1,9 @@
-import { Fragment, useRef } from 'react'
+import { Fragment, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 
 const CreateProjectModal = ({ open, setOpen, addProject }) => {
 	const cancelButtonRef = useRef(null)
+	const [projectName, setProjectName] = useState('')
 
 	return (
 		<Transition.Root show={open} as={Fragment}>
@@ -50,6 +51,7 @@ const CreateProjectModal = ({ open, setOpen, addProject }) => {
 												id="project-name"
 												className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
 												placeholder="Awesome Project"
+												onChange={e => setProjectName(e.target.value || '')}
 											/>
 										</div>
 									</div>
@@ -66,11 +68,12 @@ const CreateProjectModal = ({ open, setOpen, addProject }) => {
 								</button>
 								<button
 									type="button"
-									className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm"
+									className={`${projectName ? '' : 'disabled:opacity-50'} w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm`}
 									onClick={() => {
 										addProject(document.getElementById('project-name').value)
 										setOpen(false)
 									}}
+									disabled={!projectName}
 								>
 									Create
 								</button>

@@ -281,7 +281,7 @@ const EditProject = () => {
 							</div>
 							<div>
 								{categories.filter(c => c.id !== -1).map((category) => (
-									<Disclosure>
+									<Disclosure defaultOpen>
 										{({ open }) => (
 											<>
 												<div className="pb-5 mt-5 border-b border-gray-200 sm:flex sm:items-center sm:justify-between">
