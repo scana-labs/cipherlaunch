@@ -23,42 +23,42 @@ input CreateCollectionInput {
   collection_id: String!
   project_id: String!
   bucket_url: String!
-  create_timestamp: AWSTimestamp!
+  create_timestamp: String!
 }
 
 type Collection {
   collection_id: String!
   project_id: String!
   bucket_url: String!
-  create_timestamp: AWSTimestamp!
+  create_timestamp: String!
 }
 
 input UpdateCollectionInput {
   collection_id: String!
   project_id: String
   bucket_url: String
-  create_timestamp: AWSTimestamp
+  create_timestamp: String
 }
 
 input CreateProjectInput {
   project_id: String!
   user_id: String!
   name: String!
-  create_timestamp: AWSTimestamp!
+  create_timestamp: String!
 }
 
 type Project {
   project_id: String!
   user_id: String!
   name: String!
-  create_timestamp: AWSTimestamp!
+  create_timestamp: String!
 }
 
 input UpdateProjectInput {
   project_id: String!
   user_id: String
   name: String
-  create_timestamp: AWSTimestamp
+  create_timestamp: String
 }
 
 input CreateTraitInput {
