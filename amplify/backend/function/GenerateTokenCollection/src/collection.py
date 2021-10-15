@@ -11,6 +11,8 @@ import random
 
 s3_client = boto3.client("s3")
 
+s3_bucket = os.getenv("STORAGE_CIPHERLAUNCHPROJECTS_BUCKETNAME")
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -26,7 +28,6 @@ class Collection:
         self.categories = self.get_project_categories()  # list of categories in order of ascending rank number
         self.category_trait_rarities, self.trait_images = self.get_metadata_maps()
         self.collection_id = str(uuid4())
-        self.collection_bucket_name = "-".join(["tc", self.collection_id])
 
     def get_project_categories(self):
         return get_categories_under_project(self.project_id)
@@ -57,23 +58,6 @@ class Collection:
         elif total_possible * 0.8 <= total_tokens:
             print(f'Barely enough traits to generate {total_tokens} tokens, so may take a while')
 
-        # Create necessary output folders.
-        create_bucket_response \
-            = s3_client.create_bucket(
-            Bucket=self.collection_bucket_name,
-            CreateBucketConfiguration={
-                'LocationConstraint': os.getenv("REGION")
-            }
-        )
-        if create_bucket_response['ResponseMetadata']['HTTPStatusCode'] != 200:
-            status_code = create_bucket_response['ResponseMetadata']['HTTPStatusCode']
-            logger.error(
-                f"Received status code {status_code} when attempting to create bucket {self.collection_bucket_name}"
-            )
-            raise Exception(f"Failed to create bucket {self.collection_bucket_name}")
-
-        logger.debug(f"Created S3 Bucket with name {self.collection_bucket_name}")
-
         # Trait generation.
         random.seed(42)
         tokens = []
@@ -99,41 +83,41 @@ class Collection:
                 trait_type_to_trait_counts_dict[trait_type][trait_value] += 1
 
         token_trait_count_bytes = bytes(json.dumps(trait_type_to_trait_counts_dict).encode(UTF_8_ENCODING))
-        key = f"trait-counts/trait-counts.json"
+        key = f"{self.collection_id}/trait-counts/trait-counts.json"
         trait_counts_upload_response = s3_client.put_object(
-                Bucket=self.collection_bucket_name,
+                Bucket=s3_bucket,
                 Key=key,
                 Body=token_trait_count_bytes
             )
         if trait_counts_upload_response['ResponseMetadata']['HTTPStatusCode'] != 200:
-            status_code = create_bucket_response['ResponseMetadata']['HTTPStatusCode']
+            status_code = trait_counts_upload_response['ResponseMetadata']['HTTPStatusCode']
             logger.error(
                 f"Received status code {status_code} when attempting to put object to bucket " +
-                f"{self.collection_bucket_name} and key {key}"
+                f"{s3_bucket} and key {key}"
             )
-            raise Exception(f"Failed to upload trait counts to bucket {self.collection_bucket_name}")
-        logger.debug(f"Uploaded trait counts to bucket {self.collection_bucket_name} and key {key}")
+            raise Exception(f"Failed to upload trait counts to bucket {s3_bucket}")
+        logger.debug(f"Uploaded trait counts to bucket {s3_bucket} and key {key}")
 
         # Write each item's metadata to a separate metadata file.
         for token in tokens:
             metadata_bytes = bytes(json.dumps(token.metadata(self.project_name, self.base_url)).encode(UTF_8_ENCODING))
-            key = f"metadata/{token.token_id}.json"
+            key = f"{self.collection_id}/metadata/{token.token_id}.json"
             metadata_upload_response = s3_client.put_object(
-                Bucket=self.collection_bucket_name,
+                Bucket=s3_bucket,
                 Key=key,
                 Body=metadata_bytes
             )
             if metadata_upload_response['ResponseMetadata']['HTTPStatusCode'] != 200:
-                status_code = create_bucket_response['ResponseMetadata']['HTTPStatusCode']
+                status_code = metadata_upload_response['ResponseMetadata']['HTTPStatusCode']
                 logger.error(
                     f"Received status code {status_code} when attempting to put object to bucket " +
-                    f"{self.collection_bucket_name} and key {key}"
+                    f"{s3_bucket} and key {key}"
                 )
-                raise Exception(f"Failed to upload metadata for token_id {token.token_id} to bucket " +
-                                f"{self.collection_bucket_name}")
+                raise Exception(f"Failed to upload metadata for token_id {token.token_id} to key " +
+                                f"{key}")
             logger.debug(f"Uploaded metadata for token_id {token.token_id} to {key}")
 
-            bucket_url = f"s3://{self.collection_bucket_name}"
+            bucket_url = f"s3://{s3_bucket}/{self.collection_id}"
 
         created_collection = create_new_collection(self.collection_id, self.project_id, bucket_url)
 
