@@ -27,6 +27,10 @@
     "apiCipherLaunchGQLGraphQLAPIKeyOutput": {
       "Type": "String",
       "Default": "apiCipherLaunchGQLGraphQLAPIKeyOutput"
+    },
+    "storageCipherLaunchProjectsBucketName": {
+      "Type": "String",
+      "Default": "storageCipherLaunchProjectsBucketName"
     }
   },
   "Conditions": {
@@ -90,6 +94,9 @@
             },
             "API_CIPHERLAUNCHGQL_GRAPHQLAPIKEYOUTPUT": {
               "Ref": "apiCipherLaunchGQLGraphQLAPIKeyOutput"
+            },
+            "STORAGE_CIPHERLAUNCHPROJECTS_BUCKETNAME": {
+              "Ref": "storageCipherLaunchProjectsBucketName"
             }
           }
         },
@@ -181,15 +188,6 @@
                   }
                 ]
               }
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "s3:CreateBucket",
-                "s3:GetObject",
-                "s3:PutObject"
-              ],
-              "Resource": "arn:aws:s3:::*"
             }
           ]
         }
@@ -253,6 +251,45 @@
                         "Ref": "apiCipherLaunchGQLGraphQLAPIIdOutput"
                       },
                       "/types/Mutation/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": "s3:ListBucket",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "storageCipherLaunchProjectsBucketName"
+                      }
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:DeleteObject"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "storageCipherLaunchProjectsBucketName"
+                      },
+                      "/*"
                     ]
                   ]
                 }
