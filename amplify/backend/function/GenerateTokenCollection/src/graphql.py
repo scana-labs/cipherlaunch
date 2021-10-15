@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import logging
 import os
@@ -46,8 +46,8 @@ def get_traits_under_category(category_id):
 
 def create_new_collection(collection_id, project_id, bucket_url):
     mutation = """
-        mutation ($input : CreateCollectionsInput!) {
-            createCollections(createCollectionsInput: $input) {
+        mutation ($input : CreateCollectionInput!) {
+            createCollection(createCollectionInput: $input) {
                 bucket_url
                 collection_id
             } 
@@ -58,11 +58,12 @@ def create_new_collection(collection_id, project_id, bucket_url):
         "collection_id": collection_id,
         "project_id": project_id,
         "bucket_url": bucket_url,
-        "create_timestamp": datetime.now()
+        "create_timestamp": datetime.utcnow().isoformat()
         }
     }
     response_data = run_graphql_query(mutation, variables)
-    return response_data['createCollections']
+    logger.debug("createCollection result: " + str(response_data))
+    return response_data['createCollection']
 
 
 def run_graphql_query(query, variables):
