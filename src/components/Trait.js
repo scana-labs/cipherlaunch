@@ -6,7 +6,7 @@ function classNames(...classes) {
 	return classes.filter(Boolean).join(' ')
 }
 
-const colors = ['red', 'blue', 'green', 'yellow', 'blue', 'purple']
+const colors = ['red', 'blue', 'green', 'yellow', 'purple']
 
 const Trait = ({ trait, categories, moveTrait, currentCategory }) => {
 	const [selected, setSelected] = useState(currentCategory || null)

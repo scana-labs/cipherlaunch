@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
 	BrowserRouter as Router,
 	Redirect,
@@ -14,23 +15,27 @@ import { AuthProvider, useAuth } from './auth'
 
 import './App.css'
 
-const App = () => (
-	<AuthProvider>
-		<Router>
-			<Switch>
-				<PrivateRoute path={DEFAULT_HOME_ROUTE}>
-					<Home />
-				</PrivateRoute>
-				<Route path={DEFAULT_LOGIN_ROUTE}>
-					<Login />
-				</Route>
-				<Route path="/">
-					<Landing />
-				</Route>
-			</Switch>
-		</Router>
-	</AuthProvider>
-)
+const App = () => {
+	const [projects, setProjects] = useState([]) // TODO: Move this to GraphQL
+
+	return (
+		<AuthProvider>
+			<Router>
+				<Switch>
+					<PrivateRoute path={DEFAULT_HOME_ROUTE}>
+						<Home projects={projects} setProjects={setProjects} />
+					</PrivateRoute>
+					<Route path={DEFAULT_LOGIN_ROUTE}>
+						<Login />
+					</Route>
+					<Route path="/">
+						<Landing />
+					</Route>
+				</Switch>
+			</Router>
+		</AuthProvider>
+	)
+}
 
 export const PrivateRoute = ({ children, ...rest }) => {
 	let auth = useAuth();

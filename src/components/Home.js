@@ -10,7 +10,7 @@ import EditProject from './EditProject'
 import Sidebar from './Sidebar'
 import { DEFAULT_COLLECTIONS_ROUTE } from '../constants/Routes'
 
-const Home = () => {
+const Home = (props) => {
 	const [sidebarOpen, setSidebarOpen] = useState(false)
 	const { path } = useRouteMatch();
 
@@ -20,7 +20,7 @@ const Home = () => {
 			<Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 			<Switch>
 				<PrivateRoute exact path={path}>
-					<Projects setSidebarOpen={setSidebarOpen} />
+					<Projects projects={props.projects} setProjects={props.setProjects} setSidebarOpen={setSidebarOpen} />
 				</PrivateRoute>
 				<PrivateRoute path={`${path}${DEFAULT_COLLECTIONS_ROUTE}/:topicId`}>
 					<EditProject />

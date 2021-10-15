@@ -18,7 +18,7 @@ import {
 
 import CreateProjectModal from './CreateProjectModal'
 import MenuItems from './MenuItems'
-import { createProject, deleteProject } from '../graphql/mutations'
+import { deleteProject } from '../graphql/mutations'
 import { listProjects } from '../graphql/queries'
 import { useAuth } from '../auth'
 import { DEFAULT_COLLECTIONS_ROUTE, DEFAULT_HOME_ROUTE } from '../constants/Routes';
@@ -29,10 +29,9 @@ function classNames(...classes) {
 
 const colors = ['red', 'blue', 'pink', 'purple', 'indigo', 'yellow', 'green']
 
-const Projects = ({ setSidebarOpen }) => {
+const Projects = ({ projects, setProjects, setSidebarOpen }) => {
 	const { user } = useAuth()
 
-	const [projects, setProjects] = useState([])
 	const [modalOpen, setModalOpen] = useState(false)
 	const { url } = useRouteMatch();
 
@@ -63,7 +62,7 @@ const Projects = ({ setSidebarOpen }) => {
 		catch (e) {
 			console.log('Error fetching projects:', e)
 		}
-	}, [user]);
+	}, [setProjects, user]);
 
 	async function addProject(projectName) {
 		try {
@@ -87,12 +86,12 @@ const Projects = ({ setSidebarOpen }) => {
 				user_id: '1',
 				name: projectName,
 			}
-			const newProject = {
-				project_id: `${projects.length + 1}`,
-				user_id: '1',
-				name: projectName,
-				create_timestamp: new Date().toISOString(), // TODO: This should be done in a resolver
-			}
+			// const newProject = {
+			// 	project_id: `${projects.length + 1}`,
+			// 	user_id: '1',
+			// 	name: projectName,
+			// 	create_timestamp: new Date().toISOString(), // TODO: This should be done in a resolver
+			// }
 			// await API.graphql(graphqlOperation(createProject, { input: newProject }))
 			setProjects([...projects, newLocalProject])
 		}
