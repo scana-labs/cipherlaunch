@@ -86,13 +86,13 @@ const Projects = ({ projects, setProjects, setSidebarOpen }) => {
 				user_id: '1',
 				name: projectName,
 			}
-			// const newProject = {
-			// 	project_id: `${projects.length + 1}`,
-			// 	user_id: '1',
-			// 	name: projectName,
-			// 	create_timestamp: new Date().toISOString(), // TODO: This should be done in a resolver
-			// }
-			// await API.graphql(graphqlOperation(createProject, { input: newProject }))
+			const newProject = {
+				project_id: `${projects.length + 1}`,
+				user_id: '1',
+				name: projectName,
+				create_timestamp: new Date().toISOString()
+			}
+			await API.graphql(graphqlOperation(createProject, { input: newProject }))
 			setProjects([...projects, newLocalProject])
 		}
 		catch (e) {
