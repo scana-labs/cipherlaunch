@@ -87,7 +87,7 @@ const Projects = ({ projects, setProjects, setSidebarOpen }) => {
 				name: projectName,
 			}
 			const newProject = {
-				project_id: `${projects.length + 1}`,
+				project_id: '0',
 				user_id: '1',
 				name: projectName,
 				create_timestamp: new Date().toISOString().replace('Z', '')
