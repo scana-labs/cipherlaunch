@@ -86,11 +86,13 @@ const Projects = ({ projects, setProjects, setSidebarOpen }) => {
 				user_id: '1',
 				name: projectName,
 			}
-			const newProject = {
-				project_id: '0',
-				user_id: '1',
-				name: projectName,
-				create_timestamp: new Date().toISOString().replace('Z', '')
+			const newProject = { 
+				createProjectInput: {
+					project_id: '0',
+					user_id: '1',
+					name: projectName,
+					create_timestamp: new Date().toISOString().replace('Z', '')
+				}	
 			}
 			await API.graphql(graphqlOperation(createProject, { createProjectInput: newProject }))
 			setProjects([...projects, newLocalProject])
