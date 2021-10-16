@@ -18,7 +18,7 @@ import {
 
 import CreateProjectModal from './CreateProjectModal'
 import MenuItems from './MenuItems'
-import { deleteProject } from '../graphql/mutations'
+import { createProject, deleteProject } from '../graphql/mutations'
 import { listProjects } from '../graphql/queries'
 import { useAuth } from '../auth'
 import { DEFAULT_COLLECTIONS_ROUTE, DEFAULT_HOME_ROUTE } from '../constants/Routes';
@@ -90,7 +90,7 @@ const Projects = ({ projects, setProjects, setSidebarOpen }) => {
 				project_id: `${projects.length + 1}`,
 				user_id: '1',
 				name: projectName,
-				create_timestamp: new Date().toISOString()
+				create_timestamp: new Date().toISOString().replace('Z', '')
 			}
 			await API.graphql(graphqlOperation(createProject, { input: newProject }))
 			setProjects([...projects, newLocalProject])
