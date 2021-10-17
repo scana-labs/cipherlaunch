@@ -65,7 +65,7 @@ input CreateTraitInput {
   trait_id: String!
   name: String!
   rarity: Float
-  bucket_url: String!
+  bucket_url: String
   category_id: String
   project_id: String!
 }
@@ -74,7 +74,7 @@ type Trait {
   trait_id: String!
   name: String!
   rarity: Float
-  bucket_url: String!
+  bucket_url: String
   category_id: String
   project_id: String!
 }
