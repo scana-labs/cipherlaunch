@@ -19,8 +19,9 @@ import {
 import CreateProjectModal from './CreateProjectModal'
 import MenuItems from './MenuItems'
 import { createProject, deleteProject } from '../graphql/mutations'
-import { listProjects } from '../graphql/queries'
+import { listProjects, listProjectsUnderUser } from '../graphql/queries'
 import { useAuth } from '../auth'
+import { v4 as uuidv4 } from 'uuid';
 import { DEFAULT_COLLECTIONS_ROUTE, DEFAULT_HOME_ROUTE } from '../constants/Routes';
 
 function classNames(...classes) {
@@ -37,8 +38,8 @@ const Projects = ({ projects, setProjects, setSidebarOpen }) => {
 
 	const fetchProjects = useCallback(async () => {
 		try {
-			const projects = await API.graphql(graphqlOperation(listProjects))
-			const fetchedProjects = projects?.data?.listProjects || []
+			const projects = await API.graphql(graphqlOperation(listProjectsUnderUser, {user_id: user.id}))
+			const fetchedProjects = projects?.data?.listProjectsUnderUser || []
 			const paddedProjects = fetchedProjects.map(p => ({
 				id: p.project_id,
 				title: p.name || 'CipherLaunch',
@@ -87,8 +88,8 @@ const Projects = ({ projects, setProjects, setSidebarOpen }) => {
 				name: projectName,
 			}
 			const newProject = {
-				project_id: '0',
-				user_id: '1',
+				project_id: uuidv4(),
+				user_id: user.id,
 				name: projectName,
 				create_timestamp: new Date().toISOString().replace('Z', '')
 			}

@@ -71,6 +71,16 @@ export const listProjects = /* GraphQL */ `
     }
   }
 `;
+export const listProjectsUnderUser = /* GraphQL */ `
+  query ListProjectsUnderUser($user_id: String!) {
+    listProjectsUnderUser(user_id: $user_id) {
+      project_id
+      user_id
+      name
+      create_timestamp
+    }
+  }
+`;
 export const getTrait = /* GraphQL */ `
   query GetTrait($trait_id: String!) {
     getTrait(trait_id: $trait_id) {

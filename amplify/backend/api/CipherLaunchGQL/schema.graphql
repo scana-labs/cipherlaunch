@@ -111,6 +111,7 @@ type Query {
   listCollections: [Collection]
   getProject(project_id: String!): Project
   listProjects: [Project]
+  listProjectsUnderUser(user_id: String!): [Project]
   getTrait(trait_id: String!): Trait
   listTraits: [Trait]
   listTraitsUnderCategory(category_id: String!): [Trait]

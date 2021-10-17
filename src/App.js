@@ -11,9 +11,15 @@ import Login from './components/Login'
 import Home from './components/Home'
 import { DEFAULT_LOGIN_ROUTE, DEFAULT_HOME_ROUTE } from './constants/Routes'
 
+import Amplify from 'aws-amplify';
+import awsconfig from './aws-exports'
+
 import { AuthProvider, useAuth } from './auth'
 
 import './App.css'
+
+Amplify.configure(awsconfig);
+
 
 const App = () => {
 	const [projects, setProjects] = useState([]) // TODO: Move this to GraphQL
