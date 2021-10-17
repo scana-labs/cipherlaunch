@@ -2,17 +2,22 @@ import { useState } from 'react'
 import { Disclosure } from '@headlessui/react'
 import { MinusSmIcon, PlusSmIcon } from '@heroicons/react/outline'
 import { ChevronDownIcon, CloudUploadIcon, SearchIcon, SortAscendingIcon } from '@heroicons/react/solid'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import { v4 as uuidv4 } from 'uuid';
+
 
 import { DEFAULT_HOME_ROUTE } from '../constants/Routes'
 import Categories from './Categories'
 import Trait from './Trait'
+import {API, graphqlOperation} from '@aws-amplify/api'
+import { createCategory } from '../graphql/mutations'
 
 const EditProject = () => {
 	const [categories, setCategories] = useState([{ id: -1, name: 'None', traits: [] }])
 	const [query, setQuery] = useState('')
 	const sumReducer = (previousValue, currentValue) => previousValue + currentValue;
 	const productReducer = (previousValue, currentValue) => previousValue * currentValue;
+	const projectId = useLocation()
 
 
 	const addTrait = () => {
@@ -38,16 +43,17 @@ const EditProject = () => {
 		}
 	}
 
-	const addCategory = () => {
+	const addCategory = async () => {
 		const name = document.getElementById('category-name').value
 
 		if (name) {
 			const newCategory = {
-				id: categories.length + 1,
-				name,
-				traits: [],
+				category_id: uuidv4(),
+				project_id: projectId,
+				name: name,
+				rank:`${categories.length + 1}`
 			}
-
+			await API.graphql(graphqlOperation(createCategory, { createCategoryInput: newCategory }))
 			setCategories([...categories, newCategory])
 
 			document.getElementById('category-name').value = ''
@@ -212,7 +218,7 @@ const EditProject = () => {
 												<p className="font-medium text-gray-700">Choose image</p>
 												<CloudUploadIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
 											</div>
-											<input type="file" className="hidden" />
+											<input type="file" name="trait-image" id="trait-image" className="hidden" />
 										</label>
 									</div>
 								</div>
