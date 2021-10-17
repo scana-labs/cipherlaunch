@@ -10,7 +10,8 @@ import { DEFAULT_HOME_ROUTE } from '../constants/Routes'
 import Categories from './Categories'
 import Trait from './Trait'
 import {API, graphqlOperation} from '@aws-amplify/api'
-import { createCategory } from '../graphql/mutations'
+import { createCategory, createTrait } from '../graphql/mutations'
+import Storage from '@aws-amplify/storage'
 
 const EditProject = () => {
 	const [categories, setCategories] = useState([{ id: -1, name: 'None', traits: [] }])
@@ -23,14 +24,36 @@ const EditProject = () => {
 	const addTrait = () => {
 		const name = document.getElementById('trait-name').value
 		const rarity = document.getElementById('trait-rarity').value
+		const imageFile = document.getElementById('trait-image').value
+		const traitId = uuidv4()
 		const totalTraits = categories.map(c => c.traits.length).reduce(sumReducer, 0)
 
 		if (name && rarity) {
-			const newTrait = {
-				id: totalTraits + 1,
-				name,
-				rarity,
+			var newTrait;
+			
+			const traitAttributes = {
+				trait_id: traitId,
+				name: name,
+				rarity: rarity
 			}
+
+			await API.graphql(graphqlOperation(createTrait, { createTraitInput: newTrait }))
+			if (imageFile) {
+				try {
+					traitIdImageName = `${traitId}.png`
+					await Storage.put(traitIdImageName, imageFile)
+					newTrait = {...traitAttributes, bucket_url: `s3://${traitIdImageName}`}
+					await API.graphql(graphqlOperation(createTrait, { createTraitInput: newTrait }))
+
+				}
+				catch (error) {
+					console.log('Error uploading trait image:', error)
+				}
+			} else {
+				newTrait = traitAttributes
+				await API.graphql(graphqlOperation(createTrait, { createTraitInput: newTrait }))
+			}
+
 			const newCategories = [...categories]
 
 			// Add trait to none category
@@ -40,6 +63,7 @@ const EditProject = () => {
 
 			document.getElementById('trait-name').value = ''
 			document.getElementById('trait-rarity').value = ''
+			document.getElementById('trait-image').value = ''
 		}
 	}
 
