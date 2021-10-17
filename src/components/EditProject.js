@@ -17,7 +17,7 @@ const EditProject = () => {
 	const [query, setQuery] = useState('')
 	const sumReducer = (previousValue, currentValue) => previousValue + currentValue;
 	const productReducer = (previousValue, currentValue) => previousValue * currentValue;
-	const projectId = useLocation()
+	const projectId = useLocation() //TODO: placeholder
 
 
 	const addTrait = () => {
