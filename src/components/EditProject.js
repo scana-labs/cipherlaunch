@@ -1,7 +1,12 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import { API, graphqlOperation } from '@aws-amplify/api'
+import Storage from '@aws-amplify/storage'
+import { v4 as uuidv4 } from 'uuid';
+
 
 import { DEFAULT_HOME_ROUTE } from '../constants/Routes'
+import { createCategory, createTrait } from '../graphql/mutations'
 import AddTraitModal from './AddTraitModal'
 import Categories from './Categories'
 import PreviewPanel from './PreviewPanel'
@@ -19,39 +24,67 @@ const EditProject = () => {
 
 	const sumReducer = (previousValue, currentValue) => previousValue + currentValue;
 	const productReducer = (previousValue, currentValue) => previousValue * currentValue;
+	const projectId = useLocation() //TODO: placeholder
 
 
-	const addTrait = (name, rarity, categoryId) => {
-		const totalTraits = categories.map(c => c.traits.length).reduce(sumReducer, 0)
+	const addTrait = async (name, rarity, categoryId) => {
+		const imageFile = document.getElementById('trait-image').value
+		const traitId = uuidv4()
 
 		if (name && rarity && categoryId) {
-			const newTrait = {
-				id: totalTraits + 1,
+			let newTrait;
+
+			const traitAttributes = {
+				trait_id: traitId,
 				name,
 				rarity,
 			}
+
+			// TODO:
+			// - Do we need this call?
+			// - We should error check all GQL calls
+			await API.graphql(graphqlOperation(createTrait, { createTraitInput: newTrait }))
+			if (imageFile) {
+				try {
+					const traitIdImageName = `${traitId}.png`
+					await Storage.put(traitIdImageName, imageFile)
+					newTrait = { ...traitAttributes, bucket_url: `s3://${traitIdImageName}` }
+					await API.graphql(graphqlOperation(createTrait, { createTraitInput: newTrait }))
+
+				}
+				catch (error) {
+					console.log('Error uploading trait image:', error)
+				}
+			} else {
+				newTrait = traitAttributes
+				await API.graphql(graphqlOperation(createTrait, { createTraitInput: newTrait }))
+			}
+
 			const newCategories = [...categories]
 
-			// Add trait to none category
+			// Add trait to category
 			newCategories.filter(c => c.id === categoryId)[0].traits.push(newTrait)
 
 			setCategories(newCategories)
 
+			// Reset input fields
 			document.getElementById('trait-name').value = ''
 			document.getElementById('trait-rarity').value = ''
+			document.getElementById('trait-image').value = ''
 		}
 	}
 
-	const addCategory = () => {
+	const addCategory = async () => {
 		const name = document.getElementById('category-name').value
 
 		if (name) {
 			const newCategory = {
-				id: categories.length + 1,
-				name,
-				traits: [],
+				category_id: uuidv4(),
+				project_id: projectId,
+				name: name,
+				rank: `${categories.length + 1}`
 			}
-
+			await API.graphql(graphqlOperation(createCategory, { createCategoryInput: newCategory }))
 			setCategories([...categories, newCategory])
 
 			document.getElementById('category-name').value = ''
@@ -88,7 +121,7 @@ const EditProject = () => {
 		const result = Array.from(list);
 		const [removed] = result.splice(startIndex, 1);
 		result.splice(endIndex, 0, removed);
-	
+
 		return result;
 	};
 
