@@ -20,7 +20,6 @@ import './App.css'
 
 Amplify.configure(awsconfig);
 
-
 const App = () => {
 	const [projects, setProjects] = useState([]) // TODO: Move this to GraphQL
 

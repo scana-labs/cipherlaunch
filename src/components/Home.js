@@ -8,7 +8,7 @@ import { PrivateRoute } from '../App';
 import Projects from './Projects'
 import EditProject from './EditProject'
 import Sidebar from './Sidebar'
-import { DEFAULT_COLLECTIONS_ROUTE } from '../constants/Routes'
+import { DEFAULT_PROJECTS_ROUTE } from '../constants/Routes'
 
 const Home = (props) => {
 	const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -22,7 +22,7 @@ const Home = (props) => {
 				<PrivateRoute exact path={path}>
 					<Projects projects={props.projects} setProjects={props.setProjects} setSidebarOpen={setSidebarOpen} />
 				</PrivateRoute>
-				<PrivateRoute path={`${path}${DEFAULT_COLLECTIONS_ROUTE}/:topicId`}>
+				<PrivateRoute path={`${path}${DEFAULT_PROJECTS_ROUTE}/:projectId`}>
 					<EditProject />
 				</PrivateRoute>
 			</Switch>

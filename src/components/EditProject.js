@@ -1,26 +1,30 @@
 import { useState } from 'react'
-import { Disclosure } from '@headlessui/react'
-import { MinusSmIcon, PlusSmIcon } from '@heroicons/react/outline'
-import { ChevronDownIcon, CloudUploadIcon, SearchIcon, SortAscendingIcon } from '@heroicons/react/solid'
 import { Link } from 'react-router-dom'
 
 import { DEFAULT_HOME_ROUTE } from '../constants/Routes'
+import AddTraitModal from './AddTraitModal'
 import Categories from './Categories'
-import Trait from './Trait'
+import PreviewPanel from './PreviewPanel'
+import TraitPanel from './TraitPanel'
+
+const defaultCategory = { id: -1, name: 'Default Layer', traits: [] };
 
 const EditProject = () => {
-	const [categories, setCategories] = useState([{ id: -1, name: 'None', traits: [] }])
-	const [query, setQuery] = useState('')
+	const [categories, setCategories] = useState([defaultCategory])
+	const [selectedCategory, setSelectedCategory] = useState(defaultCategory)
+	const [selectedTraits, setSelectedTraits] = useState([])
+	const [previewPanelOpen, setPreviewPanelOpen] = useState(false)
+	const [traitPanelOpen, setTraitPanelOpen] = useState(false)
+	const [traitModalOpen, setTraitModalOpen] = useState(false)
+
 	const sumReducer = (previousValue, currentValue) => previousValue + currentValue;
 	const productReducer = (previousValue, currentValue) => previousValue * currentValue;
 
 
-	const addTrait = () => {
-		const name = document.getElementById('trait-name').value
-		const rarity = document.getElementById('trait-rarity').value
+	const addTrait = (name, rarity, categoryId) => {
 		const totalTraits = categories.map(c => c.traits.length).reduce(sumReducer, 0)
 
-		if (name && rarity) {
+		if (name && rarity && categoryId) {
 			const newTrait = {
 				id: totalTraits + 1,
 				name,
@@ -29,7 +33,7 @@ const EditProject = () => {
 			const newCategories = [...categories]
 
 			// Add trait to none category
-			newCategories.filter(c => c.id === -1)[0].traits.push(newTrait)
+			newCategories.filter(c => c.id === categoryId)[0].traits.push(newTrait)
 
 			setCategories(newCategories)
 
@@ -54,18 +58,26 @@ const EditProject = () => {
 		}
 	}
 
-	const moveTrait = (traitId, categoryId) => {
+	// Move trait from currentCategoryId to newCategoryId
+	const moveTrait = (traitId, newCategoryId, currentCategoryId) => {
 		const newCategories = [...categories]
 
-		const newNoneTraits = [...newCategories.filter(c => c.id === -1)[0].traits]
-		const trait = newNoneTraits.filter(t => t.id === traitId)[0]
-		const traitIndex = newNoneTraits.indexOf(trait)
+		// Find current category
+		const currentCategory = newCategories.filter(c => c.id === currentCategoryId)[0]
+		// Find trait
+		const trait = currentCategory.traits.filter(t => t.id === traitId)[0]
+		// Find index of trait
+		const traitIndex = currentCategory.traits.indexOf(trait)
 
+		// If trait exists
 		if (traitIndex > -1) {
-			newNoneTraits.splice(traitIndex, 1)
+			// Copy trait
+			const traitCopy = { ...trait }
+			// Add trait to new category
+			newCategories.filter(c => c.id === newCategoryId)[0].traits.push(traitCopy)
 
-			newCategories.filter(c => c.id === -1)[0].traits = newNoneTraits
-			newCategories.filter(c => c.id === categoryId)[0].traits.push(trait)
+			// Remove trait from existing category
+			currentCategory.traits.splice(traitIndex, 1)
 
 			setCategories(newCategories)
 		}
@@ -87,9 +99,9 @@ const EditProject = () => {
 		}
 
 		// Filter out not-categorized category
-		const reorderedCategories = reorder(categories.filter(c => c.id !== -1), result.source.index, result.destination.index);
+		const reorderedCategories = reorder(categories, result.source.index, result.destination.index);
 
-		setCategories([categories[0], ...reorderedCategories])
+		setCategories([...reorderedCategories])
 	}
 
 	return (
@@ -111,138 +123,32 @@ const EditProject = () => {
 					</div>
 				</dl>
 			</div>
-			{/* Uncategorized traits */}
-			<Disclosure as="div" defaultOpen>
-				{({ open }) => (
-					<>
-						<div className="pb-5 border-b border-gray-200 sm:flex sm:items-center sm:justify-between">
-							<h3 className="text-lg leading-6 font-medium text-gray-900">Uncategorized Traits</h3>
-							<div className="mt-3 sm:mt-0 sm:ml-4">
-								<label htmlFor="mobile-search-candidate" className="sr-only">
-									Search
-								</label>
-								<label htmlFor="desktop-search-candidate" className="sr-only">
-									Search
-								</label>
-								<div className="flex rounded-md">
-									<div className="relative flex-grow focus-within:z-10">
-										<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-											<SearchIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-										</div>
-										<input
-											type="text"
-											name="mobile-search-candidate"
-											id="mobile-search-candidate"
-											className="focus:ring-blue-500 focus:border-blue-500 block w-full rounded-none rounded-l-md pl-10 sm:hidden border-gray-300"
-											placeholder="Search"
-											onChange={(e) => setQuery(e.target.value)}
-										/>
-										<input
-											type="text"
-											name="desktop-search-candidate"
-											id="desktop-search-candidate"
-											className="hidden focus:ring-blue-500 focus:border-blue-500 w-full rounded-none rounded-l-md pl-10 sm:block sm:text-sm border-gray-300"
-											placeholder="Search"
-											onChange={(e) => setQuery(e.target.value)}
-										/>
-									</div>
-									<button
-										type="button"
-										className="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-									>
-										<SortAscendingIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-										<span className="ml-2">Sort</span>
-										<ChevronDownIcon className="ml-2.5 -mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-									</button>
-									<Disclosure.Button className="group relative flex justify-between items-center text-left">
-										<span className="ml-6 flex items-center">
-											{open ? (
-												<MinusSmIcon
-													className="block h-6 w-6 text-blue-400 group-hover:text-blue-500"
-													aria-hidden="true"
-												/>
-											) : (
-													<PlusSmIcon
-														className="block h-6 w-6 text-gray-400 group-hover:text-gray-500"
-														aria-hidden="true"
-													/>
-												)}
-										</span>
-									</Disclosure.Button>
-								</div>
-							</div>
-						</div>
-						<div className="pb-5 sm:flex sm:items-center justify-between max-w-2xl mx-auto py-8 px-2 lg:max-w-7xl">
-							<div className="flex">
-								<div className='w-40 h-20 bg-white rounded-lg overflow-hidden mr-3'>
-									<label className="block text-sm font-medium text-gray-700">
-										Name
-									</label>
-									<div className="mt-1">
-										<input
-											type="text"
-											name="trait-name"
-											id="trait-name"
-											className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-											placeholder="Awesome trait"
-										/>
-									</div>
-								</div>
-								<div className='w-40 h-20 bg-white rounded-lg overflow-hidden mr-3'>
-									<label className="block text-sm font-medium text-gray-700">
-										Rarity
-									</label>
-									<div className="mt-1">
-										<input
-											type="text"
-											name="trait-rarity"
-											id="trait-rarity"
-											className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-											placeholder="0.01"
-										/>
-									</div>
-								</div>
-								<div className='w-40 h-20 bg-white rounded-lg overflow-hidden mr-3'>
-									<label className="block text-sm font-medium text-gray-700">
-										Asset
-									</label>
-									<div className="mt-1">
-										<label className="cursor-pointer">
-											<div className="flex p-2 items-center justify-between w-40 h-9 border-dotted border-gray-300 rounded-md">
-												<p className="font-medium text-gray-700">Choose image</p>
-												<CloudUploadIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-											</div>
-											<input type="file" className="hidden" />
-										</label>
-									</div>
-								</div>
-							</div>
-							<button
-								type="button"
-								className="w-36 inline-flex justify-center text-center items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-								onClick={addTrait}
-							>
-								Create new trait
-							</button>
-						</div>
-						<Disclosure.Panel as="div" className="max-w-2xl mx-auto py-8 px-2 lg:max-w-7xl">
-							{categories[0].traits.length === 0 ?
-							<div className="h-full w-full flex items-center justify-center">
-								<p className="font-medium text-gray-700">Oops no traits!</p>
-							</div>
-							:
-							<div className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 gap-x-6 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-								{/* FIXME: The none cateogory will not always be guaranteed to be the first in the list */}
-								{categories[0].traits.filter(t => t.name.includes(query)).map((trait, index) => (
-									<Trait key={index} trait={trait} categories={categories} moveTrait={moveTrait} />
-								))}
-							</div>}
-						</Disclosure.Panel>
-					</>
-				)}
-			</Disclosure>
 			{/* Categories */}
-			<Categories addCategory={addCategory} categories={categories} handleDragEnd={handleDragEnd} moveTrait={moveTrait} />
+			<Categories
+				addCategory={addCategory}
+				categories={categories}
+				handleDragEnd={handleDragEnd}
+				moveTrait={moveTrait}
+				setPreviewPanelOpen={setPreviewPanelOpen}
+				setSelectedCategory={setSelectedCategory}
+				setSelectedTraits={setSelectedTraits}
+				setTraitModalOpen={setTraitModalOpen}
+				setTraitPanelOpen={setTraitPanelOpen}
+			/>
+			<AddTraitModal categoryIdToModify={selectedCategory.id} open={traitModalOpen} setOpen={setTraitModalOpen} addTrait={addTrait} />
+			<PreviewPanel
+				previewPanelOpen={previewPanelOpen}
+				setPreviewPanelOpen={setPreviewPanelOpen}
+			/>
+			<TraitPanel
+				categories={categories}
+				moveTrait={moveTrait}
+				selectedCategory={selectedCategory}
+				setTraitModalOpen={setTraitModalOpen}
+				setTraitPanelOpen={setTraitPanelOpen}
+				traitPanelOpen={traitPanelOpen}
+				traits={selectedTraits}
+			/>
 		</div>
 	)
 }

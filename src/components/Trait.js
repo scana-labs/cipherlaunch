@@ -2,20 +2,22 @@ import { Fragment, useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
 
+import './Trait.css'
+
 function classNames(...classes) {
 	return classes.filter(Boolean).join(' ')
 }
 
-const colors = ['red', 'blue', 'green', 'yellow', 'purple']
+const colors = ['blue', 'green', 'yellow']
 
-const Trait = ({ trait, categories, moveTrait, currentCategory }) => {
+const Trait = ({ categories, currentCategory, moveTrait, trait }) => {
 	const [selected, setSelected] = useState(currentCategory || null)
 
 	const handleChange = (newSelected) => {
-		console.log('Handle change', newSelected)
+		console.log('Move Trait', newSelected)
 		try {
 			setSelected(newSelected)
-			moveTrait(trait.id, newSelected.id)
+			moveTrait(trait.id, newSelected.id, currentCategory.id)
 		}
 		catch (e) {
 			console.log('Unable to move trait:', e)
@@ -23,8 +25,8 @@ const Trait = ({ trait, categories, moveTrait, currentCategory }) => {
 	}
 
 	return (
-		<div key={trait.id} className="group h-60">
-			<div className={`w-full h-40 bg-${colors[trait.id % (colors.length - 1)]}-400 rounded-lg overflow-hidden`} />
+		<div key={trait.id} className="group">
+			<div className={`w-full h-40 bg-${colors[trait.id % (colors.length)]}-400 rounded-lg overflow-hidden`} />
 			<div className="w-full flex items-center justify-between mt-3">
 				<div>
 					<p className="mt-4 text-lg font-medium text-gray-900">{trait.name}</p>
@@ -35,7 +37,7 @@ const Trait = ({ trait, categories, moveTrait, currentCategory }) => {
 						<Listbox.Label className="block text-sm font-medium text-gray-700">Category</Listbox.Label>
 						<div className="mt-1 relative">
 							<Listbox.Button className="bg-white relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-								<span className="block truncate">{selected?.name || 'No category!'}</span>
+								<span className="block truncate">{selected?.name || 'Default layer'}</span>
 								<span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
 									<SelectorIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
 								</span>

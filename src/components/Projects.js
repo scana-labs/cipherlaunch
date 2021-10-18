@@ -19,10 +19,10 @@ import {
 import CreateProjectModal from './CreateProjectModal'
 import MenuItems from './MenuItems'
 import { createProject, deleteProject } from '../graphql/mutations'
-import { listProjects, listProjectsUnderUser } from '../graphql/queries'
+import { listProjectsUnderUser } from '../graphql/queries'
 import { useAuth } from '../auth'
 import { v4 as uuidv4 } from 'uuid';
-import { DEFAULT_COLLECTIONS_ROUTE, DEFAULT_HOME_ROUTE } from '../constants/Routes';
+import { DEFAULT_PROJECTS_ROUTE, DEFAULT_HOME_ROUTE } from '../constants/Routes';
 
 function classNames(...classes) {
 	return classes.filter(Boolean).join(' ')
@@ -32,13 +32,12 @@ const colors = ['red', 'blue', 'pink', 'purple', 'indigo', 'yellow', 'green']
 
 const Projects = ({ projects, setProjects, setSidebarOpen }) => {
 	const { user } = useAuth()
-
-	const [modalOpen, setModalOpen] = useState(false)
 	const { url } = useRouteMatch();
+	const [modalOpen, setModalOpen] = useState(false)
 
 	const fetchProjects = useCallback(async () => {
 		try {
-			const projects = await API.graphql(graphqlOperation(listProjectsUnderUser, {user_id: user.id}))
+			const projects = await API.graphql(graphqlOperation(listProjectsUnderUser, { user_id: user.attributes.sub }))
 			const fetchedProjects = projects?.data?.listProjectsUnderUser || []
 			const paddedProjects = fetchedProjects.map(p => ({
 				id: p.project_id,
@@ -89,7 +88,7 @@ const Projects = ({ projects, setProjects, setSidebarOpen }) => {
 			}
 			const newProject = {
 				project_id: uuidv4(),
-				user_id: user.id,
+				user_id: user.attributes.sub,
 				name: projectName,
 				create_timestamp: new Date().toISOString().replace('Z', '')
 			}
@@ -235,7 +234,7 @@ const Projects = ({ projects, setProjects, setSidebarOpen }) => {
 													className={classNames(project.bgColorClass, 'flex-shrink-0 w-2.5 h-2.5 rounded-full')}
 													aria-hidden="true"
 												/>
-												<Link to={`${url}${DEFAULT_COLLECTIONS_ROUTE}/${project.id}`} className="truncate hover:text-gray-600">
+												<Link to={`${url}${DEFAULT_PROJECTS_ROUTE}/${project.id}`} className="truncate hover:text-gray-600">
 													<span>
 														{project.title}
 													</span>
