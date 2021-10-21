@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from graphql import get_categories_under_project, get_traits_under_category, create_new_collection
+from graphql import get_layers_under_project, get_traits_under_layer, create_new_collection
 from uuid import uuid4
 from token_item import Token
 import boto3
@@ -25,32 +25,32 @@ class Collection:
         self.project_id = project_id
         self.project_name = project_name
         self.base_url = base_url
-        self.categories = self.get_project_categories()  # list of categories in order of ascending rank number
-        self.category_trait_rarities, self.trait_images = self.get_metadata_maps()
+        self.layers = self.get_project_layers()  # list of layers in order of ascending layer_order number
+        self.layer_trait_rarities, self.trait_images = self.get_metadata_maps()
         self.collection_id = str(uuid4())
 
-    def get_project_categories(self):
-        return get_categories_under_project(self.project_id)
+    def get_project_layers(self):
+        return get_layers_under_project(self.project_id)
 
     def get_metadata_maps(self):
-        categories_trait_rarities = {}
+        layers_trait_rarities = {}
         trait_images = {}
-        for category in self.categories:
+        for layer in self.layers:
             traits = []
             rarities = []
-            category_traits = get_traits_under_category(category["category_id"])
-            for trait in category_traits:
+            layer_traits = get_traits_under_layer(layer["layer_id"])
+            for trait in layer_traits:
                 traits.append(trait["name"])
                 rarities.append(trait["rarity"])
                 trait_images[trait["name"]] = trait["bucket_url"]
-            categories_trait_rarities[category["name"]] = (traits, rarities)
-        return categories_trait_rarities, trait_images
+            layers_trait_rarities[layer["name"]] = (traits, rarities)
+        return layers_trait_rarities, trait_images
 
     def generate_tokens(self, total_tokens, token_id_offset=0):
         # Check that we have enough traits to generate total_tokens.
         total_possible = 1
-        for category in self.category_trait_rarities:
-            traits = self.category_trait_rarities[category]
+        for layer in self.layer_trait_rarities:
+            traits = self.layer_trait_rarities[layer]
             if traits:
                 total_possible *= len(traits)
         if total_possible < total_tokens:
@@ -63,7 +63,7 @@ class Collection:
         tokens = []
         tokens_set = set()
         while len(tokens) < total_tokens:
-            token = Token.random(self.category_trait_rarities)
+            token = Token.random(self.layer_trait_rarities)
             if token in tokens_set:  # TODO: incompatible traits
                 continue
             tokens.append(token)

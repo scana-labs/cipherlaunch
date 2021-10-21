@@ -1,76 +1,76 @@
 {
-  "api": {
-    "CipherLaunchGQL": {
-      "service": "AppSync",
-      "providerPlugin": "awscloudformation",
-      "output": {
-        "authConfig": {
-          "defaultAuthentication": {
-            "authenticationType": "API_KEY",
-            "apiKeyConfig": {
-              "apiKeyExpirationDays": 7,
-              "description": "api key for CLGQL"
-            }
-          },
-          "additionalAuthenticationProviders": []
+    "api": {
+        "CipherLaunchGQL": {
+            "service": "AppSync",
+            "providerPlugin": "awscloudformation",
+            "output": {
+                "authConfig": {
+                    "defaultAuthentication": {
+                        "authenticationType": "API_KEY",
+                        "apiKeyConfig": {
+                            "apiKeyExpirationDays": 7,
+                            "description": "api key for CLGQL"
+                        }
+                    },
+                    "additionalAuthenticationProviders": []
+                }
+            },
+            "rdsInit": true
         }
-      },
-      "rdsInit": true
-    }
-  },
-  "function": {
-    "GenerateTokenCollection": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": [
-        {
-          "category": "api",
-          "resourceName": "CipherLaunchGQL",
-          "attributes": [
-            "GraphQLAPIIdOutput",
-            "GraphQLAPIEndpointOutput",
-            "GraphQLAPIKeyOutput"
-          ]
-        },
-        {
-          "category": "storage",
-          "resourceName": "CipherLaunchProjects",
-          "attributes": [
-            "BucketName"
-          ]
-        }
-      ]
     },
-    "GenerateTokenCollectionImages": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": [
-        {
-          "category": "api",
-          "resourceName": "CipherLaunchGQL",
-          "attributes": [
-            "GraphQLAPIIdOutput",
-            "GraphQLAPIEndpointOutput",
-            "GraphQLAPIKeyOutput"
-          ]
+    "function": {
+        "GenerateTokenCollection": {
+            "build": true,
+            "providerPlugin": "awscloudformation",
+            "service": "Lambda",
+            "dependsOn": [
+                {
+                    "category": "api",
+                    "resourceName": "CipherLaunchGQL",
+                    "attributes": [
+                        "GraphQLAPIIdOutput",
+                        "GraphQLAPIEndpointOutput",
+                        "GraphQLAPIKeyOutput"
+                    ]
+                },
+                {
+                    "category": "storage",
+                    "resourceName": "CipherLaunchProjects",
+                    "attributes": [
+                        "BucketName"
+                    ]
+                }
+            ]
+        },
+        "GenerateTokenCollectionImages": {
+            "build": true,
+            "providerPlugin": "awscloudformation",
+            "service": "Lambda",
+            "dependsOn": [
+                {
+                    "category": "api",
+                    "resourceName": "CipherLaunchGQL",
+                    "attributes": [
+                        "GraphQLAPIIdOutput",
+                        "GraphQLAPIEndpointOutput",
+                        "GraphQLAPIKeyOutput"
+                    ]
+                }
+            ]
         }
-      ]
+    },
+    "auth": {
+        "cognito8d64442b": {
+            "service": "Cognito",
+            "serviceType": "managed",
+            "providerPlugin": "awscloudformation",
+            "dependsOn": []
+        }
+    },
+    "storage": {
+        "CipherLaunchProjects": {
+            "service": "S3",
+            "providerPlugin": "awscloudformation"
+        }
     }
-  },
-  "auth": {
-    "cognito8d64442b": {
-      "service": "Cognito",
-      "serviceType": "managed",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": []
-    }
-  },
-  "storage": {
-    "CipherLaunchProjects": {
-      "service": "S3",
-      "providerPlugin": "awscloudformation"
-    }
-  }
 }

@@ -1,36 +1,6 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const getCategory = /* GraphQL */ `
-  query GetCategory($category_id: String!) {
-    getCategory(category_id: $category_id) {
-      category_id
-      name
-      rank
-      project_id
-    }
-  }
-`;
-export const listCategories = /* GraphQL */ `
-  query ListCategories {
-    listCategories {
-      category_id
-      name
-      rank
-      project_id
-    }
-  }
-`;
-export const listCategoriesUnderProject = /* GraphQL */ `
-  query ListCategoriesUnderProject($project_id: String!) {
-    listCategoriesUnderProject(project_id: $project_id) {
-      category_id
-      name
-      rank
-      project_id
-    }
-  }
-`;
 export const getCollection = /* GraphQL */ `
   query GetCollection($collection_id: String!) {
     getCollection(collection_id: $collection_id) {
@@ -88,8 +58,8 @@ export const getTrait = /* GraphQL */ `
       name
       rarity
       bucket_url
-      category_id
       project_id
+      layer_id
     }
   }
 `;
@@ -100,30 +70,50 @@ export const listTraits = /* GraphQL */ `
       name
       rarity
       bucket_url
-      category_id
       project_id
+      layer_id
     }
   }
 `;
-export const listTraitsUnderCategory = /* GraphQL */ `
-  query ListTraitsUnderCategory($category_id: String!) {
-    listTraitsUnderCategory(category_id: $category_id) {
+export const listTraitsUnderLayer = /* GraphQL */ `
+  query ListTraitsUnderLayer($layer_id: String!) {
+    listTraitsUnderLayer(layer_id: $layer_id) {
       trait_id
       name
       rarity
       bucket_url
-      category_id
       project_id
+      layer_id
     }
   }
 `;
-export const listCategorys = /* GraphQL */ `
-  query ListCategorys {
-    listCategorys {
-      category_id
+export const getLayer = /* GraphQL */ `
+  query GetLayer($layer_id: String!) {
+    getLayer(layer_id: $layer_id) {
       name
-      rank
       project_id
+      layer_id
+      layer_order
+    }
+  }
+`;
+export const listLayers = /* GraphQL */ `
+  query ListLayers {
+    listLayers {
+      name
+      project_id
+      layer_id
+      layer_order
+    }
+  }
+`;
+export const listLayersUnderProject = /* GraphQL */ `
+  query ListLayersUnderProject($project_id: String!) {
+    listLayersUnderProject(project_id: $project_id) {
+      name
+      project_id
+      layer_id
+      layer_order
     }
   }
 `;

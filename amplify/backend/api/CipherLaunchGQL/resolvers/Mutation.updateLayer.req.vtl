@@ -1,0 +1,9 @@
+#set( $updateList = {} )
+#foreach( $entry in $ctx.args.updateLayerInput.keySet() )
+  #set( $discard = $updateList.put($entry, "'$ctx.args.updateLayerInput[$entry]'") )
+#end
+#set( $update = $updateList.toString().replace("{","").replace("}","") )
+{
+  "version": "2018-05-29",
+  "statements":   ["UPDATE Layer SET $update WHERE layer_id='$ctx.args.updateLayerInput.layer_id'", "SELECT * FROM Layer WHERE layer_id='$ctx.args.updateLayerInput.layer_id'"]
+}
