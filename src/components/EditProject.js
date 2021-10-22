@@ -6,17 +6,17 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 import { DEFAULT_PROJECTS_ROUTE } from '../constants/Routes'
-import { createCategory, createTrait } from '../graphql/mutations'
+import {createLayer, createTrait } from '../graphql/mutations'
 import AddTraitModal from './AddTraitModal'
-import Categories from './Categories'
+import Layers from './Layers'
 import PreviewPanel from './PreviewPanel'
 import TraitPanel from './TraitPanel'
 
-const defaultCategory = { id: -1, name: 'Default Layer', traits: [] };
+const defaultLayer = { id: -1, name: 'Default Layer', traits: [] };
 
 const EditProject = () => {
-	const [categories, setCategories] = useState([defaultCategory])
-	const [selectedCategory, setSelectedCategory] = useState(defaultCategory)
+	const [layers, setLayers] = useState([defaultLayer])
+	const [selectedLayer, setSelectedLayer] = useState(defaultLayer)
 	const [selectedTraits, setSelectedTraits] = useState([])
 	const [previewPanelOpen, setPreviewPanelOpen] = useState(false)
 	const [traitPanelOpen, setTraitPanelOpen] = useState(false)
@@ -27,11 +27,11 @@ const EditProject = () => {
 	const projectId = useLocation() //TODO: placeholder
 
 
-	const addTrait = async (name, rarity, categoryId) => {
+	const addTrait = async (name, rarity, layerId) => {
 		const imageFile = document.getElementById('trait-image').value
 		const traitId = uuidv4()
 
-		if (name && rarity && categoryId) {
+		if (name && rarity && layerId) {
 			let newTrait;
 
 			const traitAttributes = {
@@ -60,12 +60,12 @@ const EditProject = () => {
 				await API.graphql(graphqlOperation(createTrait, { createTraitInput: newTrait }))
 			}
 
-			const newCategories = [...categories]
+			const newLayers = [...layers]
 
-			// Add trait to category
-			newCategories.filter(c => c.id === categoryId)[0].traits.push(newTrait)
+			// Add trait to layer
+			newLayers.filter(c => c.id === layerId)[0].traits.push(newTrait)
 
-			setCategories(newCategories)
+			setLayers(newLayers)
 
 			// Reset input fields
 			document.getElementById('trait-name').value = ''
@@ -74,45 +74,45 @@ const EditProject = () => {
 		}
 	}
 
-	const addCategory = async () => {
-		const name = document.getElementById('category-name').value
+	const addLayer = async () => {
+		const name = document.getElementById('layer-name').value
 
 		if (name) {
-			const newCategory = {
-				category_id: uuidv4(),
+			const newLayer = {
+				layer_id: uuidv4(),
 				project_id: projectId,
 				name: name,
-				rank: `${categories.length + 1}`
+				layer_order: `${layers.length + 1}`
 			}
-			await API.graphql(graphqlOperation(createCategory, { createCategoryInput: newCategory }))
-			setCategories([...categories, newCategory])
+			await API.graphql(graphqlOperation(createLayer, { createLayerInput: newLayer }))
+			setLayers([...layers, newLayer])
 
-			document.getElementById('category-name').value = ''
+			document.getElementById('layer-name').value = ''
 		}
 	}
 
 	// Move trait from currentCategoryId to newCategoryId
-	const moveTrait = (traitId, newCategoryId, currentCategoryId) => {
-		const newCategories = [...categories]
+	const moveTrait = (traitId, newLayerId, currentLayerId) => {
+		const newLayers = [...layers]
 
-		// Find current category
-		const currentCategory = newCategories.filter(c => c.id === currentCategoryId)[0]
+		// Find current layer
+		const currentLayer = newLayers.filter(c => c.id === currentLayerId)[0]
 		// Find trait
-		const trait = currentCategory.traits.filter(t => t.id === traitId)[0]
+		const trait = currentLayer.traits.filter(t => t.id === traitId)[0]
 		// Find index of trait
-		const traitIndex = currentCategory.traits.indexOf(trait)
+		const traitIndex = currentLayer.traits.indexOf(trait)
 
 		// If trait exists
 		if (traitIndex > -1) {
 			// Copy trait
 			const traitCopy = { ...trait }
-			// Add trait to new category
-			newCategories.filter(c => c.id === newCategoryId)[0].traits.push(traitCopy)
+			// Add trait to new layer
+			newLayers.filter(c => c.id === newLayerId)[0].traits.push(traitCopy)
 
-			// Remove trait from existing category
-			currentCategory.traits.splice(traitIndex, 1)
+			// Remove trait from existing layer
+			currentLayer.traits.splice(traitIndex, 1)
 
-			setCategories(newCategories)
+			setLayers(newLayers)
 		}
 	}
 
@@ -125,16 +125,16 @@ const EditProject = () => {
 		return result;
 	};
 
-	// All category logic should probably move into Categories
+	// All layer logic should probably move into Layers
 	const handleDragEnd = (result) => {
 		if (!result.destination) {
 			return
 		}
 
-		// Filter out not-categorized category
-		const reorderedCategories = reorder(categories, result.source.index, result.destination.index);
+		// Filter out not-categorized layer
+		const reorderedLayers = reorder(layers, result.source.index, result.destination.index);
 
-		setCategories([...reorderedCategories])
+		setLayers([...reorderedLayers])
 	}
 
 	return (
@@ -144,39 +144,39 @@ const EditProject = () => {
 				<dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
 					<div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
 						<dt className="text-sm font-medium text-gray-500 truncate">Total Traits</dt>
-						<dd className="mt-1 text-3xl font-semibold text-gray-900">{categories.map(c => c.traits.length).reduce(sumReducer, 0)}</dd>
+						<dd className="mt-1 text-3xl font-semibold text-gray-900">{layers.map(c => c.traits.length).reduce(sumReducer, 0)}</dd>
 					</div>
 					<div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
-						<dt className="text-sm font-medium text-gray-500 truncate">Total Categories</dt>
-						<dd className="mt-1 text-3xl font-semibold text-gray-900">{categories.length - 1}</dd>
+						<dt className="text-sm font-medium text-gray-500 truncate">Total Layers</dt>
+						<dd className="mt-1 text-3xl font-semibold text-gray-900">{layers.length - 1}</dd>
 					</div>
 					<div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
 						<dt className="text-sm font-medium text-gray-500 truncate">Total Tokens</dt>
-						<dd className="mt-1 text-3xl font-semibold text-gray-900">{categories.filter(c => c.id !== -1).map(c => c.traits.length).reduce(productReducer, 1)}</dd>
+						<dd className="mt-1 text-3xl font-semibold text-gray-900">{layers.filter(c => c.id !== -1).map(c => c.traits.length).reduce(productReducer, 1)}</dd>
 					</div>
 				</dl>
 			</div>
-			{/* Categories */}
-			<Categories
-				addCategory={addCategory}
-				categories={categories}
+			{/* Layers */}
+			<Layers
+				addLayer={addLayer}
+				layers={layers}
 				handleDragEnd={handleDragEnd}
 				moveTrait={moveTrait}
 				setPreviewPanelOpen={setPreviewPanelOpen}
-				setSelectedCategory={setSelectedCategory}
+				setSelectedLayer={setSelectedLayer}
 				setSelectedTraits={setSelectedTraits}
 				setTraitModalOpen={setTraitModalOpen}
 				setTraitPanelOpen={setTraitPanelOpen}
 			/>
-			<AddTraitModal categoryIdToModify={selectedCategory.id} open={traitModalOpen} setOpen={setTraitModalOpen} addTrait={addTrait} />
+			<AddTraitModal layerIdToModify={selectedLayer.id} open={traitModalOpen} setOpen={setTraitModalOpen} addTrait={addTrait} />
 			<PreviewPanel
 				previewPanelOpen={previewPanelOpen}
 				setPreviewPanelOpen={setPreviewPanelOpen}
 			/>
 			<TraitPanel
-				categories={categories}
+				layers={layers}
 				moveTrait={moveTrait}
-				selectedCategory={selectedCategory}
+				selectedLayer={selectedLayer}
 				setTraitModalOpen={setTraitModalOpen}
 				setTraitPanelOpen={setTraitPanelOpen}
 				traitPanelOpen={traitPanelOpen}

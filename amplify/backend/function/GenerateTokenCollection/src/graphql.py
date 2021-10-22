@@ -13,35 +13,35 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-def get_categories_under_project(project_id):
+def get_layers_under_project(project_id):
     query = """
-        query listCategoriesUnderProject ($project_id: String!) {
-            listCategoriesUnderProject(project_id: $project_id) {
-                category_id
+        query listLayersUnderProject ($project_id: String!) {
+            listLayersUnderProject(project_id: $project_id) {
+                layer_id
                 name
-                rank
+                layer_order
             }
         }
     """
     variables = {"project_id": project_id}
     response_data = run_graphql_query(query, variables)
-    logger.debug("categories_under_project query result: " + str(response_data))
-    return response_data["listCategoriesUnderProject"]
+    logger.debug("layers_under_project query result: " + str(response_data))
+    return response_data["listLayersUnderProject"]
 
 
-def get_traits_under_category(category_id):
+def get_traits_under_layer(layer_id):
     query = """
-        query ($category_id : String!) {
-            listTraitsUnderCategory(category_id: $category_id) {
+        query ($layer_id : String!) {
+            listTraitsUnderLayer(layer_id: $layer_id) {
                 name
                 rarity
                 bucket_url
             }
         }
     """
-    variables = {"category_id": category_id}
+    variables = {"layer_id": layer_id}
     response_data = run_graphql_query(query, variables)
-    return response_data["listTraitsUnderCategory"]
+    return response_data["listTraitsUnderLayer"]
 
 
 def create_new_collection(collection_id, project_id, bucket_url):

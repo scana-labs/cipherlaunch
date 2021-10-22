@@ -1,16 +1,6 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const onCreateCategory = /* GraphQL */ `
-  subscription OnCreateCategory {
-    onCreateCategory {
-      category_id
-      name
-      rank
-      project_id
-    }
-  }
-`;
 export const onCreateCollection = /* GraphQL */ `
   subscription OnCreateCollection {
     onCreateCollection {
@@ -38,8 +28,18 @@ export const onCreateTrait = /* GraphQL */ `
       name
       rarity
       bucket_url
-      category_id
       project_id
+      layer_id
+    }
+  }
+`;
+export const onCreateLayer = /* GraphQL */ `
+  subscription OnCreateLayer {
+    onCreateLayer {
+      name
+      project_id
+      layer_id
+      layer_order
     }
   }
 `;

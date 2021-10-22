@@ -1,36 +1,6 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const deleteCategory = /* GraphQL */ `
-  mutation DeleteCategory($category_id: String!) {
-    deleteCategory(category_id: $category_id) {
-      category_id
-      name
-      rank
-      project_id
-    }
-  }
-`;
-export const createCategory = /* GraphQL */ `
-  mutation CreateCategory($createCategoryInput: CreateCategoryInput!) {
-    createCategory(createCategoryInput: $createCategoryInput) {
-      category_id
-      name
-      rank
-      project_id
-    }
-  }
-`;
-export const updateCategory = /* GraphQL */ `
-  mutation UpdateCategory($updateCategoryInput: UpdateCategoryInput!) {
-    updateCategory(updateCategoryInput: $updateCategoryInput) {
-      category_id
-      name
-      rank
-      project_id
-    }
-  }
-`;
 export const deleteCollection = /* GraphQL */ `
   mutation DeleteCollection($collection_id: String!) {
     deleteCollection(collection_id: $collection_id) {
@@ -98,8 +68,8 @@ export const deleteTrait = /* GraphQL */ `
       name
       rarity
       bucket_url
-      category_id
       project_id
+      layer_id
     }
   }
 `;
@@ -110,8 +80,8 @@ export const createTrait = /* GraphQL */ `
       name
       rarity
       bucket_url
-      category_id
       project_id
+      layer_id
     }
   }
 `;
@@ -122,8 +92,38 @@ export const updateTrait = /* GraphQL */ `
       name
       rarity
       bucket_url
-      category_id
       project_id
+      layer_id
+    }
+  }
+`;
+export const deleteLayer = /* GraphQL */ `
+  mutation DeleteLayer($layer_id: String!) {
+    deleteLayer(layer_id: $layer_id) {
+      name
+      project_id
+      layer_id
+      layer_order
+    }
+  }
+`;
+export const createLayer = /* GraphQL */ `
+  mutation CreateLayer($createLayerInput: CreateLayerInput!) {
+    createLayer(createLayerInput: $createLayerInput) {
+      name
+      project_id
+      layer_id
+      layer_order
+    }
+  }
+`;
+export const updateLayer = /* GraphQL */ `
+  mutation UpdateLayer($updateLayerInput: UpdateLayerInput!) {
+    updateLayer(updateLayerInput: $updateLayerInput) {
+      name
+      project_id
+      layer_id
+      layer_order
     }
   }
 `;

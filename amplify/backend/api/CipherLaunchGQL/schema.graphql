@@ -1,24 +1,3 @@
-input CreateCategoryInput {
-  category_id: String!
-  name: String!
-  rank: Int!
-  project_id: String!
-}
-
-type Category {
-  category_id: String!
-  name: String!
-  rank: Int!
-  project_id: String!
-}
-
-input UpdateCategoryInput {
-  category_id: String!
-  name: String
-  rank: Int
-  project_id: String
-}
-
 input CreateCollectionInput {
   collection_id: String!
   project_id: String!
@@ -66,8 +45,8 @@ input CreateTraitInput {
   name: String!
   rarity: Float
   bucket_url: String
-  category_id: String
   project_id: String!
+  layer_id: String
 }
 
 type Trait {
@@ -75,8 +54,8 @@ type Trait {
   name: String!
   rarity: Float
   bucket_url: String
-  category_id: String
   project_id: String!
+  layer_id: String
 }
 
 input UpdateTraitInput {
@@ -84,14 +63,11 @@ input UpdateTraitInput {
   name: String
   rarity: Float
   bucket_url: String
-  category_id: String
   project_id: String
+  layer_id: String
 }
 
 type Mutation {
-  deleteCategory(category_id: String!): Category
-  createCategory(createCategoryInput: CreateCategoryInput!): Category
-  updateCategory(updateCategoryInput: UpdateCategoryInput!): Category
   deleteCollection(collection_id: String!): Collection
   createCollection(createCollectionInput: CreateCollectionInput!): Collection
   updateCollection(updateCollectionInput: UpdateCollectionInput!): Collection
@@ -101,12 +77,12 @@ type Mutation {
   deleteTrait(trait_id: String!): Trait
   createTrait(createTraitInput: CreateTraitInput!): Trait
   updateTrait(updateTraitInput: UpdateTraitInput!): Trait
+  deleteLayer(layer_id: String!): Layer
+  createLayer(createLayerInput: CreateLayerInput!): Layer
+  updateLayer(updateLayerInput: UpdateLayerInput!): Layer
 }
 
 type Query {
-  getCategory(category_id: String!): Category
-  listCategories: [Category]
-  listCategoriesUnderProject(project_id: String!): [Category]
   getCollection(collection_id: String!): Collection
   listCollections: [Collection]
   getProject(project_id: String!): Project
@@ -114,8 +90,11 @@ type Query {
   listProjectsUnderUser(user_id: String!): [Project]
   getTrait(trait_id: String!): Trait
   listTraits: [Trait]
-  listTraitsUnderCategory(category_id: String!): [Trait]
-  listCategorys: [Category]
+  listTraitsUnderLayer(layer_id: String!): [Trait]
+  getLayer(layer_id: String!): Layer
+  listLayers: [Layer]
+  listLayersUnderProject(project_id: String!): [Layer]
+
 }
 
 schema {
@@ -125,8 +104,29 @@ schema {
 }
 
 type Subscription {
-  onCreateCategory: Category @aws_subscribe(mutations: ["createCategory"])
   onCreateCollection: Collection @aws_subscribe(mutations: ["createCollection"])
   onCreateProject: Project @aws_subscribe(mutations: ["createProject"])
   onCreateTrait: Trait @aws_subscribe(mutations: ["createTrait"])
+  onCreateLayer: Layer @aws_subscribe(mutations: ["createLayer"])
+}
+
+input CreateLayerInput {
+  name: String!
+  project_id: String!
+  layer_id: String!
+  layer_order: Int
+}
+
+type Layer {
+  name: String!
+  project_id: String!
+  layer_id: String!
+  layer_order: Int
+}
+
+input UpdateLayerInput {
+  name: String
+  project_id: String
+  layer_id: String!
+  layer_order: Int
 }

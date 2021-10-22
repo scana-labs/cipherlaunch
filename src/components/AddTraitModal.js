@@ -4,7 +4,7 @@ import { CloudUploadIcon } from '@heroicons/react/solid'
 
 import isNumeric from '../util/isNumeric'
 
-const AddTraitModal = ({ categoryIdToModify, open, setOpen, addTrait }) => {
+const AddTraitModal = ({ layerIdToModify, open, setOpen, addTrait }) => {
 	const cancelButtonRef = useRef(null)
 	const [traitName, setTraitName] = useState('')
 	const [rarity, setRarity] = useState(0)
@@ -106,7 +106,7 @@ const AddTraitModal = ({ categoryIdToModify, open, setOpen, addTrait }) => {
 									className={`${traitName ? '' : 'disabled:opacity-50'} w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm`}
 									onClick={() => {
 										if (traitName && isNumeric(rarity)) {
-											addTrait(traitName, rarity, categoryIdToModify)
+											addTrait(traitName, rarity, layerIdToModify)
 											setOpen(false)
 										}
 										else {
