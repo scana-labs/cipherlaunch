@@ -2,9 +2,9 @@ import { Fragment, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { CloudUploadIcon } from '@heroicons/react/solid'
 
-const AddCategoryModal = ({ open, setOpen, addCategory }) => {
+const AddLayersModal = ({ open, setOpen, addLayer }) => {
 	const cancelButtonRef = useRef(null)
-	const [categoryName, setCategoryName] = useState('')
+	const [layerName, setLayerName] = useState('')
 
 	return (
 		<Transition.Root show={open} as={Fragment}>
@@ -48,11 +48,11 @@ const AddCategoryModal = ({ open, setOpen, addCategory }) => {
 										<div className="mt-1">
 											<input
 												type="text"
-												name="category-name"
-												id="category-name"
+												name="layer-name"
+												id="layer-name"
 												className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
 												placeholder="Awesome Layer"
-												onChange={(e) => setCategoryName(e.target.value)}
+												onChange={(e) => setLayerName(e.target.value)}
 											/>
 										</div>
 									</div>
@@ -83,12 +83,12 @@ const AddCategoryModal = ({ open, setOpen, addCategory }) => {
 								</button>
 								<button
 									type="button"
-									className={`${categoryName ? '' : 'disabled:opacity-50'} w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm`}
+									className={`${layerName ? '' : 'disabled:opacity-50'} w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm`}
 									onClick={() => {
-										addCategory(categoryName)
+										addLayer(layerName)
 										setOpen(false)
 									}}
-									disabled={!categoryName}
+									disabled={!layerName}
 								>
 									Create
 								</button>
@@ -101,4 +101,4 @@ const AddCategoryModal = ({ open, setOpen, addCategory }) => {
 	)
 }
 
-export default AddCategoryModal
+export default AddLayersModal

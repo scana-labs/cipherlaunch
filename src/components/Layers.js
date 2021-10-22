@@ -11,24 +11,24 @@ import {
 } from '@heroicons/react/solid'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
-import AddCategoryModal from './AddCategoryModal'
+import AddLayersModal from './AddLayersModal'
 
 const getItemStyle = (isDragging) => ({
 	// change background colour if dragging
 	backgroundColor: isDragging ? 'rgb(248,248,255)' : 'white',
 })
 
-const Categories = ({
-	addCategory,
-	categories,
+const Layers = ({
+	addLayer,
+	layers,
 	handleDragEnd,
 	setPreviewPanelOpen,
-	setSelectedCategory,
+	setSelectedLayer,
 	setSelectedTraits,
 	setTraitModalOpen,
 	setTraitPanelOpen,
 }) => {
-	const [categoryModalOpen, setCategoryModalOpen] = useState(false)
+	const [layerModalOpen, setLayerModalOpen] = useState(false)
 	const [query, setQuery] = useState('')
 
 	return (
@@ -46,7 +46,7 @@ const Categories = ({
 						<button
 							type="button"
 							className="w-36 mr-5 inline-flex justify-center text-center items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-							onClick={() => setCategoryModalOpen(true)}
+							onClick={() => setLayerModalOpen(true)}
 						>
 							<PlusCircleIcon className="-ml-1 mr-2 h-5 w-5 text-gray-300" aria-hidden="true" />
 							Add Layer
@@ -104,8 +104,8 @@ const Categories = ({
 								ref={provided.innerRef}
 							>
 								<ul className="">
-									{categories.filter(c => c.name.includes(query)).map((category, index) => (
-										<Draggable key={category.id} draggableId={`${category.id}`} index={index}>
+									{layers.filter(c => c.name.includes(query)).map((layer, index) => (
+										<Draggable key={layer.id} draggableId={`${layer.id}`} index={index}>
 											{(provided, snapshot) => (
 												<div
 													ref={provided.innerRef}
@@ -117,7 +117,7 @@ const Categories = ({
 														...provided.draggableProps.style,
 													}}
 												>
-													<li key={category.id}>
+													<li key={layer.id}>
 														<div
 															className="border border-gray-200 rounded block hover:bg-gray-50"
 															style={getItemStyle(
@@ -135,7 +135,7 @@ const Categories = ({
 																			<div className="flex items-center text-sm text-gray-500">
 																				<PuzzleIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
 																				<p>
-																					{category.traits.length} traits
+																					{layer.traits.length} traits
 																				</p>
 																			</div>
 																		</div>
@@ -146,7 +146,7 @@ const Categories = ({
 																		type="button"
 																		className="w-36 mr-5 inline-flex justify-center text-center items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
 																		onClick={() => {
-																			setSelectedCategory(category)
+																			setSelectedLayer(layer)
 																			setTraitModalOpen(true)
 																		}}
 																	>
@@ -157,8 +157,8 @@ const Categories = ({
 																		type="button"
 																		className="w-36 mr-5 inline-flex justify-center text-center items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
 																		onClick={() => {
-																			setSelectedCategory(category)
-																			setSelectedTraits(category.traits)
+																			setSelectedLayer(layer)
+																			setSelectedTraits(layer.traits)
 																			setTraitPanelOpen(true)
 																		}}
 																	>
@@ -182,9 +182,9 @@ const Categories = ({
 				}
 			</DragDropContext>
 
-			<AddCategoryModal open={categoryModalOpen} setOpen={setCategoryModalOpen} addCategory={addCategory} />
+			<AddLayersModal open={layerModalOpen} setOpen={setLayerModalOpen} addLayer={addLayer} />
 		</>
 	)
 }
 
-export default Categories
+export default Layers

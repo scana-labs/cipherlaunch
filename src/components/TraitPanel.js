@@ -5,9 +5,9 @@ import { XIcon } from '@heroicons/react/outline'
 import Trait from './Trait'
 
 const TraitPanel = ({
-	categories,
+	layers,
 	moveTrait,
-	selectedCategory,
+	selectedLayer,
 	setTraitModalOpen,
 	setTraitPanelOpen,
 	traitPanelOpen,
@@ -34,7 +34,7 @@ const TraitPanel = ({
 									<div className="min-h-0 flex-1 flex flex-col py-6 overflow-y-scroll">
 										<div className="px-4 sm:px-6">
 											<div className="flex items-start justify-between">
-												<Dialog.Title className="text-lg font-medium text-gray-900">{selectedCategory.name} Traits</Dialog.Title>
+												<Dialog.Title className="text-lg font-medium text-gray-900">{selectedLayer.name} Traits</Dialog.Title>
 												<div className="ml-3 h-7 flex items-center">
 													<button
 														type="button"
@@ -51,7 +51,7 @@ const TraitPanel = ({
 											{traits.length > 0 ?
 												traits.map((t, index) => (
 													<div className="m-2 w-full md:w-1/2" key={`trait-${index}`}>
-														<Trait key={index} categories={categories} currentCategory={selectedCategory} moveTrait={moveTrait} trait={t} />
+														<Trait key={index} categories={layers} currentCategory={selectedLayer} moveTrait={moveTrait} trait={t} />
 													</div>
 												))
 												:
