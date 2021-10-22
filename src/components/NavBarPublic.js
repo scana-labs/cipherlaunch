@@ -9,7 +9,7 @@ import {
 import { DEFAULT_LOGIN_ROUTE, DEFAULT_SIGNUP_ROUTE } from '../constants/Routes'
 import { useAuth } from '../auth'
 
-const NavBar = () => {
+const NavBarPublic = () => {
 	const location = useLocation();
 	const { user } = useAuth();
 
@@ -88,4 +88,4 @@ const NavBar = () => {
 	)
 }
 
-export default NavBar
+export default NavBarPublic

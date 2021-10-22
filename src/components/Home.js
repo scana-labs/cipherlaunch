@@ -1,31 +1,38 @@
-import { useState } from 'react'
 import {
 	Switch,
 	useRouteMatch,
 } from "react-router-dom";
 
+import Collections from "./Collections";
+import { DEFAULT_COLLECTIONS_ROUTE, DEFAULT_PROJECTS_ROUTE } from '../constants/Routes'
+import EditProject from './EditProject'
+import NavBarPrivate from './NavBarPrivate'
 import { PrivateRoute } from '../App';
 import Projects from './Projects'
-import EditProject from './EditProject'
-import Sidebar from './Sidebar'
-import { DEFAULT_PROJECTS_ROUTE } from '../constants/Routes'
 
 const Home = (props) => {
-	const [sidebarOpen, setSidebarOpen] = useState(false)
 	const { path } = useRouteMatch();
 
 	return (
 		<div className="relative h-screen flex bg-white">
-			<div className="hidden h-screen w-64 lg:block"></div>
-			<Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-			<Switch>
-				<PrivateRoute exact path={path}>
-					<Projects projects={props.projects} setProjects={props.setProjects} setSidebarOpen={setSidebarOpen} />
-				</PrivateRoute>
-				<PrivateRoute path={`${path}${DEFAULT_PROJECTS_ROUTE}/:projectId`}>
-					<EditProject />
-				</PrivateRoute>
-			</Switch>
+			<div className="fixed w-full">
+				<NavBarPrivate />
+			</div>
+			<div className="mt-16 h-full w-full bg-gray-100">
+				<div className="h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+					<Switch>
+						<PrivateRoute exact path={path}>
+							<Projects projects={props.projects} setProjects={props.setProjects} />
+						</PrivateRoute>
+						<PrivateRoute path={`${DEFAULT_PROJECTS_ROUTE}/:projectId`}>
+							<EditProject />
+						</PrivateRoute>
+						<PrivateRoute path={`${DEFAULT_COLLECTIONS_ROUTE}`}>
+							<Collections />
+						</PrivateRoute>
+					</Switch>
+				</div>
+			</div>
 		</div>
 	)
 }

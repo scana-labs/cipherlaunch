@@ -2,13 +2,13 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { AmplifyAuthenticator, AmplifySignIn, AmplifySignUp } from '@aws-amplify/ui-react'
 import { AuthState } from '@aws-amplify/ui-components'
 
-import { DEFAULT_HOME_ROUTE } from '../constants/Routes'
+import { DEFAULT_PROJECTS_ROUTE } from '../constants/Routes'
 
 const Login = () => {
 	let history = useHistory();
 	let location = useLocation();
   
-	const { from } = location.state || { from: { pathname: DEFAULT_HOME_ROUTE } }
+	const { from } = location.state || { from: { pathname: DEFAULT_PROJECTS_ROUTE } }
 
 	const handleAuthStateChange = (nextAuthState, authData) => {
 		console.log(nextAuthState, authData, from)

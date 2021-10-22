@@ -5,16 +5,14 @@ import {
 	Route,
 	Switch
 } from 'react-router-dom'
+import Amplify from 'aws-amplify';
 
+import awsconfig from './aws-exports'
+import { AuthProvider, useAuth } from './auth'
 import Landing from './components/Landing'
 import Login from './components/Login'
 import Home from './components/Home'
-import { DEFAULT_LOGIN_ROUTE, DEFAULT_HOME_ROUTE } from './constants/Routes'
-
-import Amplify from 'aws-amplify';
-import awsconfig from './aws-exports'
-
-import { AuthProvider, useAuth } from './auth'
+import { DEFAULT_LOGIN_ROUTE, DEFAULT_PROJECTS_ROUTE } from './constants/Routes'
 
 import './App.css'
 
@@ -27,7 +25,7 @@ const App = () => {
 		<AuthProvider>
 			<Router>
 				<Switch>
-					<PrivateRoute path={DEFAULT_HOME_ROUTE}>
+					<PrivateRoute path={DEFAULT_PROJECTS_ROUTE}>
 						<Home projects={projects} setProjects={setProjects} />
 					</PrivateRoute>
 					<Route path={DEFAULT_LOGIN_ROUTE}>

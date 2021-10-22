@@ -5,7 +5,7 @@ import Storage from '@aws-amplify/storage'
 import { v4 as uuidv4 } from 'uuid';
 
 
-import { DEFAULT_HOME_ROUTE } from '../constants/Routes'
+import { DEFAULT_PROJECTS_ROUTE } from '../constants/Routes'
 import { createCategory, createTrait } from '../graphql/mutations'
 import AddTraitModal from './AddTraitModal'
 import Categories from './Categories'
@@ -138,8 +138,8 @@ const EditProject = () => {
 	}
 
 	return (
-		<div className="flex flex-col w-0 flex-1 m-5">
-			<Link className="underline hover:text-blue-600" to={DEFAULT_HOME_ROUTE}>Back to Projects</Link>
+		<div className="flex flex-col flex-1 m-5">
+			<Link className="underline hover:text-blue-600" to={DEFAULT_PROJECTS_ROUTE}>Back to Projects</Link>
 			<div className="mb-5">
 				<dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
 					<div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">

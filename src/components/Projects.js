@@ -1,28 +1,24 @@
 import { Fragment, useCallback, useEffect, useState } from 'react'
 import {
 	Link,
-	useRouteMatch,
 } from "react-router-dom";
 import { API, graphqlOperation } from 'aws-amplify'
 import { Menu, Transition } from '@headlessui/react'
-import { MenuAlt1Icon } from '@heroicons/react/outline'
 import {
 	ChevronRightIcon,
 	DotsVerticalIcon,
 	DuplicateIcon,
 	PencilAltIcon,
-	SearchIcon,
 	TrashIcon,
 	UserAddIcon,
 } from '@heroicons/react/solid'
 
 import CreateProjectModal from './CreateProjectModal'
-import MenuItems from './MenuItems'
 import { createProject, deleteProject } from '../graphql/mutations'
 import { listProjectsUnderUser } from '../graphql/queries'
 import { useAuth } from '../auth'
 import { v4 as uuidv4 } from 'uuid';
-import { DEFAULT_PROJECTS_ROUTE, DEFAULT_HOME_ROUTE } from '../constants/Routes';
+import { DEFAULT_PROJECTS_ROUTE } from '../constants/Routes';
 
 function classNames(...classes) {
 	return classes.filter(Boolean).join(' ')
@@ -30,9 +26,8 @@ function classNames(...classes) {
 
 const colors = ['red', 'blue', 'pink', 'purple', 'indigo', 'yellow', 'green']
 
-const Projects = ({ projects, setProjects, setSidebarOpen }) => {
+const Projects = ({ projects, setProjects }) => {
 	const { user } = useAuth()
-	const { url } = useRouteMatch();
 	const [modalOpen, setModalOpen] = useState(false)
 
 	const fetchProjects = useCallback(async () => {
@@ -115,58 +110,12 @@ const Projects = ({ projects, setProjects, setSidebarOpen }) => {
 	}, [fetchProjects])
 
 	return (
-		<div className="flex flex-col w-0 flex-1 overflow-hidden">
-			{/* Search header */}
-			<div className="relative z-10 flex-shrink-0 flex h-16 bg-white border-b border-gray-200 lg:hidden">
-				<button
-					type="button"
-					className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 lg:hidden"
-					onClick={() => setSidebarOpen(true)}
-				>
-					<span className="sr-only">Open sidebar</span>
-					<MenuAlt1Icon className="h-6 w-6" aria-hidden="true" />
-				</button>
-				<div className="flex-1 flex justify-between px-4 sm:px-6 lg:px-8">
-					<div className="flex-1 flex">
-						<form className="w-full flex md:ml-0" action="#" method="GET">
-							<label htmlFor="search-field" className="sr-only">
-								Search
-							</label>
-							<div className="relative w-full text-gray-400 focus-within:text-gray-600">
-								<div className="absolute inset-y-0 left-0 flex items-center pointer-events-none">
-									<SearchIcon className="h-5 w-5" aria-hidden="true" />
-								</div>
-								<input
-									id="search-field"
-									name="search-field"
-									className="block w-full h-full pl-8 pr-3 py-2 border-transparent text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-0 focus:border-transparent focus:placeholder-gray-400 sm:text-sm"
-									placeholder="Search"
-									type="search"
-								/>
-							</div>
-						</form>
-					</div>
-					<div className="flex items-center">
-						{/* Profile dropdown */}
-						<Menu as="div" className="ml-3 relative">
-							<div>
-								<Menu.Button className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-									<span className="sr-only">Open user menu</span>
-									<span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-gray-500">
-										<span className="text-xl font-medium leading-none text-white">{user.username[0]}</span>
-									</span>
-								</Menu.Button>
-							</div>
-							<MenuItems />
-						</Menu>
-					</div>
-				</div>
-			</div>
-			<main className="flex-1 relative z-0 overflow-y-auto focus:outline-none">
+		<div className="h-full flex flex-col flex-1 overflow-hidden">
+			<main className="h-full flex-1 relative z-0 overflow-y-auto focus:outline-none">
 				{/* Page title & actions */}
-				<div className="border-b border-gray-200 px-4 py-4 sm:flex sm:items-center sm:justify-between sm:px-6 lg:px-8">
+				<div className="px-4 py-4 sm:flex sm:items-center sm:justify-between sm:px-6 lg:px-8">
 					<div className="flex-1 min-w-0">
-						<h1 className="text-lg font-medium leading-6 text-gray-900 sm:truncate">Home</h1>
+						<h1 className="text-lg font-medium leading-6 text-gray-900 sm:truncate">Projects</h1>
 					</div>
 					<div className="mt-4 flex sm:mt-0 sm:ml-4">
 						<button
@@ -174,7 +123,7 @@ const Projects = ({ projects, setProjects, setSidebarOpen }) => {
 							className="order-0 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:order-1 sm:ml-3"
 							onClick={() => setModalOpen(true)}
 						>
-							Create
+							Create Project
 					</button>
 					</div>
 				</div>
@@ -208,21 +157,21 @@ const Projects = ({ projects, setProjects, setSidebarOpen }) => {
 				</div>
 
 				{/* Projects table (small breakpoint and up) */}
-				<div className="hidden sm:block">
-					<div className="align-middle inline-block min-w-full border-b border-gray-200">
-						<table className="min-w-full">
+				<div className="h-full hidden sm:block">
+					<div className="h-full align-middle min-w-full overflow-x-auto shadow overflow-hidden sm:rounded-lg">
+						<table className="min-w-full divide-y divide-gray-200">
 							<thead>
-								<tr className="border-t border-gray-200">
-									<th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								<tr>
+									<th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 										<span className="lg:pl-2">Project</span>
 									</th>
-									<th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+									<th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 										Members
 									</th>
-									<th className="hidden md:table-cell px-6 py-3 border-b border-gray-200 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+									<th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 										Last updated
 									</th>
-									<th className="pr-6 py-3 border-b border-gray-200 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider" />
+									<th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" />
 								</tr>
 							</thead>
 							<tbody className="bg-white divide-y divide-gray-100">
@@ -234,7 +183,7 @@ const Projects = ({ projects, setProjects, setSidebarOpen }) => {
 													className={classNames(project.bgColorClass, 'flex-shrink-0 w-2.5 h-2.5 rounded-full')}
 													aria-hidden="true"
 												/>
-												<Link to={`${url}${DEFAULT_PROJECTS_ROUTE}/${project.id}`} className="truncate hover:text-gray-600">
+												<Link to={`${DEFAULT_PROJECTS_ROUTE}/${project.id}`} className="truncate hover:text-gray-600">
 													<span>
 														{project.title}
 													</span>
@@ -283,7 +232,7 @@ const Projects = ({ projects, setProjects, setSidebarOpen }) => {
 															<Menu.Item>
 																{({ active }) => (
 																	<a
-																		href={DEFAULT_HOME_ROUTE}
+																		href={DEFAULT_PROJECTS_ROUTE}
 																		className={classNames(
 																			active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
 																			'group flex items-center px-4 py-2 text-sm'
@@ -300,7 +249,7 @@ const Projects = ({ projects, setProjects, setSidebarOpen }) => {
 															<Menu.Item>
 																{({ active }) => (
 																	<a
-																		href={DEFAULT_HOME_ROUTE}
+																		href={DEFAULT_PROJECTS_ROUTE}
 																		className={classNames(
 																			active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
 																			'group flex items-center px-4 py-2 text-sm'
@@ -317,7 +266,7 @@ const Projects = ({ projects, setProjects, setSidebarOpen }) => {
 															<Menu.Item>
 																{({ active }) => (
 																	<a
-																		href={DEFAULT_HOME_ROUTE}
+																		href={DEFAULT_PROJECTS_ROUTE}
 																		className={classNames(
 																			active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
 																			'group flex items-center px-4 py-2 text-sm'
@@ -336,7 +285,7 @@ const Projects = ({ projects, setProjects, setSidebarOpen }) => {
 															<Menu.Item>
 																{({ active }) => (
 																	<a
-																		href={DEFAULT_HOME_ROUTE}
+																		href={DEFAULT_PROJECTS_ROUTE}
 																		className={classNames(
 																			active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
 																			'group flex items-center px-4 py-2 text-sm'

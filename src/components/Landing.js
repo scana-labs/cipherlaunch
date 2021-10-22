@@ -1,6 +1,6 @@
 import { ReactComponent as Lucid } from '../assets/lucid.svg'
 
-import NavBar from './NavBar'
+import NavBarPublic from './NavBarPublic'
 import Features from './Features'
 import Footer from './Footer'
 import Team from './Team'
@@ -9,7 +9,7 @@ import './Landing.css'
 
 const Landing = () => (
 	<div className="relative bg-white overflow-hidden">
-		<NavBar />
+		<NavBarPublic />
 		<div className="flex w-screen">
 			<div className="relative w-full md:w-1/2">
 				<svg
