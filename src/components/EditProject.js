@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 import { DEFAULT_HOME_ROUTE } from '../constants/Routes'
-import { createCategory, createLayer, createTrait } from '../graphql/mutations'
+import {createLayer, createTrait } from '../graphql/mutations'
 import AddTraitModal from './AddTraitModal'
 import Layers from './Layers'
 import PreviewPanel from './PreviewPanel'
@@ -60,12 +60,12 @@ const EditProject = () => {
 				await API.graphql(graphqlOperation(createTrait, { createTraitInput: newTrait }))
 			}
 
-			const newCategories = [...categories]
+			const newLayers = [...layers]
 
 			// Add trait to layer
-			newCategories.filter(c => c.id === layerId)[0].traits.push(newTrait)
+			newLayers.filter(c => c.id === layerId)[0].traits.push(newTrait)
 
-			setCategories(newCategories)
+			setLayers(newLayers)
 
 			// Reset input fields
 			document.getElementById('trait-name').value = ''
@@ -85,7 +85,7 @@ const EditProject = () => {
 				layer_order: `${categories.length + 1}`
 			}
 			await API.graphql(graphqlOperation(createLayer, { createLayerInput: newLayer }))
-			setCategories([...layers, newLayer])
+			setLayers([...layers, newLayer])
 
 			document.getElementById('layer-name').value = ''
 		}
