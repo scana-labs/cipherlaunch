@@ -92,7 +92,7 @@ const Layers = ({
 				</div>
 			</div>
 			<DragDropContext onDragEnd={handleDragEnd}>
-				{categories.length === 0 ?
+				{layers.length === 0 ?
 					<div className="h-full w-full flex items-center justify-center mt-5">
 						<p className="font-medium text-gray-700">Oops no cateogories!</p>
 					</div>
@@ -129,7 +129,7 @@ const Layers = ({
 																	<MenuIcon className="-ml-1 mr-2 h-5 w-5 text-gray-500" aria-hidden="true" />
 																	<div className="ml-5 truncate">
 																		<div className="flex text-sm">
-																			<p className="font-medium text-blue-600 truncate">{category.name}</p>
+																			<p className="font-medium text-blue-600 truncate">{layer.name}</p>
 																		</div>
 																		<div className="mt-2 flex">
 																			<div className="flex items-center text-sm text-gray-500">

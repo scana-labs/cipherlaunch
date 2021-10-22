@@ -82,7 +82,7 @@ const EditProject = () => {
 				layer_id: uuidv4(),
 				project_id: projectId,
 				name: name,
-				layer_order: `${categories.length + 1}`
+				layer_order: `${layers.length + 1}`
 			}
 			await API.graphql(graphqlOperation(createLayer, { createLayerInput: newLayer }))
 			setLayers([...layers, newLayer])
@@ -125,7 +125,7 @@ const EditProject = () => {
 		return result;
 	};
 
-	// All layer logic should probably move into Categories
+	// All layer logic should probably move into Layers
 	const handleDragEnd = (result) => {
 		if (!result.destination) {
 			return
@@ -144,15 +144,15 @@ const EditProject = () => {
 				<dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
 					<div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
 						<dt className="text-sm font-medium text-gray-500 truncate">Total Traits</dt>
-						<dd className="mt-1 text-3xl font-semibold text-gray-900">{categories.map(c => c.traits.length).reduce(sumReducer, 0)}</dd>
+						<dd className="mt-1 text-3xl font-semibold text-gray-900">{layers.map(c => c.traits.length).reduce(sumReducer, 0)}</dd>
 					</div>
 					<div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
-						<dt className="text-sm font-medium text-gray-500 truncate">Total Categories</dt>
-						<dd className="mt-1 text-3xl font-semibold text-gray-900">{categories.length - 1}</dd>
+						<dt className="text-sm font-medium text-gray-500 truncate">Total Layers</dt>
+						<dd className="mt-1 text-3xl font-semibold text-gray-900">{layers.length - 1}</dd>
 					</div>
 					<div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
 						<dt className="text-sm font-medium text-gray-500 truncate">Total Tokens</dt>
-						<dd className="mt-1 text-3xl font-semibold text-gray-900">{categories.filter(c => c.id !== -1).map(c => c.traits.length).reduce(productReducer, 1)}</dd>
+						<dd className="mt-1 text-3xl font-semibold text-gray-900">{layers.filter(c => c.id !== -1).map(c => c.traits.length).reduce(productReducer, 1)}</dd>
 					</div>
 				</dl>
 			</div>
