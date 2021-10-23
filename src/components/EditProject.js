@@ -168,6 +168,7 @@ const EditProject = () => {
 				projectId={projectId}
 				handleDragEnd={handleDragEnd}
 				moveTrait={moveTrait}
+				setLayers={setLayers}
 				setPreviewPanelOpen={setPreviewPanelOpen}
 				setSelectedLayer={setSelectedLayer}
 				setSelectedTraits={setSelectedTraits}

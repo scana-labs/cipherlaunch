@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { API, graphqlOperation } from 'aws-amplify'
+
 import {
 	ChevronDownIcon,
 	ChevronRightIcon,
@@ -12,6 +14,7 @@ import {
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
 import AddLayersModal from './AddLayersModal'
+import { listLayersUnderProject } from '../graphql/queries';
 
 const getItemStyle = (isDragging) => ({
 	// change background colour if dragging
@@ -21,7 +24,9 @@ const getItemStyle = (isDragging) => ({
 const Layers = ({
 	addLayer,
 	layers,
+	projectId,
 	handleDragEnd,
+	setLayers,
 	setPreviewPanelOpen,
 	setSelectedLayer,
 	setSelectedTraits,
@@ -30,6 +35,28 @@ const Layers = ({
 }) => {
 	const [layerModalOpen, setLayerModalOpen] = useState(false)
 	const [query, setQuery] = useState('')
+
+	const fetchLayers = useCallback(async () => {
+		try {
+			const layers = await API.graphql(graphqlOperation(listLayersUnderProject, { project_id: projectId }))
+			const fetchedLayers = layers?.data?.listLayersUnderProject || []
+			const paddedLayers = fetchedLayers.map(l => ({
+				id: l.layer_id,
+				name: l.name,
+				traits: []
+			}))
+
+			setLayers(paddedLayers)
+			console.log('Layers', layers)
+		}
+		catch (e) {
+			console.log('Error fetching layers:', e)
+		}
+	}, [setLayers, projectId]);
+
+	useEffect(() => {
+		fetchLayers()
+	}, [fetchLayers])
 
 	return (
 		<>
