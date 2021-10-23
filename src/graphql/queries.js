@@ -57,7 +57,7 @@ export const getTrait = /* GraphQL */ `
       trait_id
       name
       rarity
-      bucket_url
+      image_url
       project_id
       layer_id
     }
@@ -69,7 +69,7 @@ export const listTraits = /* GraphQL */ `
       trait_id
       name
       rarity
-      bucket_url
+      image_url
       project_id
       layer_id
     }
@@ -81,7 +81,7 @@ export const listTraitsUnderLayer = /* GraphQL */ `
       trait_id
       name
       rarity
-      bucket_url
+      image_url
       project_id
       layer_id
     }

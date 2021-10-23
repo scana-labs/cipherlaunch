@@ -27,7 +27,7 @@ export const onCreateTrait = /* GraphQL */ `
       trait_id
       name
       rarity
-      bucket_url
+      image_url
       project_id
       layer_id
     }

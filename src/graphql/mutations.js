@@ -67,7 +67,7 @@ export const deleteTrait = /* GraphQL */ `
       trait_id
       name
       rarity
-      bucket_url
+      image_url
       project_id
       layer_id
     }
@@ -79,7 +79,7 @@ export const createTrait = /* GraphQL */ `
       trait_id
       name
       rarity
-      bucket_url
+      image_url
       project_id
       layer_id
     }
@@ -91,7 +91,7 @@ export const updateTrait = /* GraphQL */ `
       trait_id
       name
       rarity
-      bucket_url
+      image_url
       project_id
       layer_id
     }
