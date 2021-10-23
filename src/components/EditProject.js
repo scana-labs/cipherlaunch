@@ -1,75 +1,128 @@
 import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { CollectionIcon, ChevronRightIcon, HomeIcon } from '@heroicons/react/solid'
+import { Link, useParams } from 'react-router-dom'
 import { API, graphqlOperation } from '@aws-amplify/api'
 import Storage from '@aws-amplify/storage'
 import { v4 as uuidv4 } from 'uuid';
 
-
 import { DEFAULT_PROJECTS_ROUTE } from '../constants/Routes'
-import {createLayer, createTrait } from '../graphql/mutations'
+import { createLayer, createTrait, deleteLayer, deleteTrait } from '../graphql/mutations'
 import AddTraitModal from './AddTraitModal'
-import Layers from './Layers'
-import PreviewPanel from './PreviewPanel'
+import LayersContainer from './LayersContainer'
 import TraitPanel from './TraitPanel'
 
-const defaultLayer = { id: -1, name: 'Default Layer', traits: [] };
+const defaultLayer = { id: -1, name: 'Default Layer', traits: [] }
 
 const EditProject = () => {
-	const [layers, setLayers] = useState([defaultLayer])
-	const [selectedLayer, setSelectedLayer] = useState(defaultLayer)
+	const { projectId } = useParams() // Extract project_id from path
+
+	const [layers, setLayers] = useState([])
+	const [nav, setNav] = useState([{ name: 'Edit Project', href: `${DEFAULT_PROJECTS_ROUTE}/${projectId}`, current: true }])
+	const [selectedLayer, setSelectedLayer] = useState(defaultLayer) // TODO: Remove default layer
 	const [selectedTraits, setSelectedTraits] = useState([])
-	const [previewPanelOpen, setPreviewPanelOpen] = useState(false)
 	const [traitPanelOpen, setTraitPanelOpen] = useState(false)
 	const [traitModalOpen, setTraitModalOpen] = useState(false)
 
-	const sumReducer = (previousValue, currentValue) => previousValue + currentValue;
-	const productReducer = (previousValue, currentValue) => previousValue * currentValue;
-	const projectId = useLocation().pathname.substring(useLocation().pathname.lastIndexOf('/') + 1) //Extract project_id from path
+	const sumReducer = (previousValue, currentValue) => previousValue + currentValue
+	const productReducer = (previousValue, currentValue) => previousValue * currentValue
 
-	const addTrait = async (name, rarity, layerId) => {
-		const imageFile = document.getElementById('trait-image').value
+	// TODO: Cleanup handlers to not have to be passed down multiple children
+	// name: String
+	// rarity: String
+	// layerId: String
+	// image: File
+	const addTrait = async (name, rarity, layerId, image) => {
 		const traitId = uuidv4()
 
 		if (name && rarity && layerId) {
-			let newTrait;
-
-			const traitAttributes = {
-				trait_id: traitId,
+			let addTraitIsSuccess = false
+			const traitIdImageName = `projects/${projectId}/${traitId}.png`
+			const newTrait = {
 				name,
+				layer_id: layerId,
+				project_id: projectId,
 				rarity,
+				trait_id: traitId,
 			}
 
-			// TODO:
-			// - Do we need this call?
-			// - We should error check all GQL calls
-			await API.graphql(graphqlOperation(createTrait, { createTraitInput: newTrait }))
-			if (imageFile) {
-				try {
-					const traitIdImageName = `${traitId}.png`
-					await Storage.put(traitIdImageName, imageFile)
-					newTrait = { ...traitAttributes, bucket_url: `s3://${traitIdImageName}` }
-					await API.graphql(graphqlOperation(createTrait, { createTraitInput: newTrait }))
+			// TODO: Enforce better image validation
+			// Move validation to modal
+			if (image) {
+				let invalidFile = false
 
+				if (!image instanceof File) {
+					console.log('Invalid File object used for trait image')
+					invalidFile = true
 				}
-				catch (error) {
-					console.log('Error uploading trait image:', error)
+
+				if (image.type !== 'image/png') {
+					console.log('Invalid image type. Please only upload PNGs')
+					invalidFile = true
+				}
+
+				if (!invalidFile) {
+					try {
+						const result = await Storage.put(traitIdImageName, image, {
+							contentType: 'image/png'
+						})
+						newTrait.image_url = result.key // TODO Update public prefix, change to be image_key
+					}
+					catch (error) {
+						console.log('Error uploading trait image:', error)
+					}
 				}
 			} else {
-				newTrait = traitAttributes
-				await API.graphql(graphqlOperation(createTrait, { createTraitInput: newTrait }))
+				console.log('No image provided')
 			}
 
+			try {
+				await API.graphql(graphqlOperation(createTrait, { createTraitInput: newTrait }))
+				addTraitIsSuccess = true
+			}
+			catch (e) {
+				console.log('Error adding trait', e)
+			}
+
+			if (addTraitIsSuccess) {
+				const newLayers = [...layers]
+
+				// Add trait to layer
+				newLayers.filter(c => c.id === layerId)[0].traits.push(newTrait)
+
+				setLayers(newLayers)
+			}
+		}
+	}
+
+	const removeTrait = async (traitId, layerId) => {
+		if (!traitId) {
+			console.log('Error deleting layer id: invalid traitId', traitId)
+		}
+
+		console.log('Deleting trait', traitId)
+
+		try {
+			await API.graphql(graphqlOperation(deleteTrait, { trait_id: traitId }))
 			const newLayers = [...layers]
+			const filtered = newLayers.filter(layer => layer.id === layerId)
 
-			// Add trait to layer
-			newLayers.filter(c => c.id === layerId)[0].traits.push(newTrait)
+			// TODO: Should remove image from S3?
 
-			setLayers(newLayers)
+			if (filtered.length > 0) {
+				const layerIndex = newLayers.indexOf(filtered[0])
+				const newTraits = [...filtered[0].traits]
+				newTraits.splice(newTraits.indexOf(newTraits.filter(t => t.id === traitId)[0]), 1) // FIXME, better error handling
+				newLayers[layerIndex].traits = newTraits
 
-			// Reset input fields
-			document.getElementById('trait-name').value = ''
-			document.getElementById('trait-rarity').value = ''
-			document.getElementById('trait-image').value = ''
+				setLayers(newLayers)
+				setSelectedTraits(newTraits)
+			}
+			else {
+				console.log('Error deleting trait. Unable to find layerId:', layerId)
+			}
+		}
+		catch (e) {
+			console.log('Error deleting layer', e)
 		}
 	}
 
@@ -87,12 +140,37 @@ const EditProject = () => {
 				const createdLayer = await API.graphql(graphqlOperation(createLayer, { createLayerInput: newLayerInput }))
 				const createdLayerMetadata = createdLayer?.data?.createLayer || []
 				const newLayer = { id: createdLayerMetadata.layer_id, name: createdLayerMetadata.name, traits: [] }
-	
-				setLayers([...layers, newLayer])	
+
+				setLayers([...layers, newLayer])
 			}
 			catch (e) {
 				console.log('Error creating new layer:', e)
 			}
+		}
+	}
+
+	const removeLayer = async (layerId) => {
+		if (!layerId) {
+			console.log('Error deleting layer id: invalid layerId', layerId)
+		}
+
+		console.log('Deleting layer', layerId)
+
+		try {
+			await API.graphql(graphqlOperation(deleteLayer, { layer_id: layerId }))
+			const newLayers = [...layers]
+			const filtered = newLayers.filter(layer => layer.id === layerId)
+
+			if (filtered.length > 0) {
+				newLayers.splice(newLayers.indexOf(filtered[0]), 1)
+				setLayers(newLayers)
+			}
+			else {
+				console.log('Error deleting layer. Unable to find layerId:', layerId)
+			}
+		}
+		catch (e) {
+			console.log('Error deleting layer', e)
 		}
 	}
 
@@ -144,7 +222,42 @@ const EditProject = () => {
 
 	return (
 		<div className="flex flex-col flex-1 m-5">
-			<Link className="underline hover:text-blue-600" to={DEFAULT_PROJECTS_ROUTE}>Back to Projects</Link>
+			<div className="flex justify-between items-center">
+				<nav className="flex" aria-label="Breadcrumb">
+					<ol className="flex items-center space-x-4">
+						<li>
+							<div>
+								<Link to={DEFAULT_PROJECTS_ROUTE} className="text-gray-400 hover:text-gray-500">
+									<HomeIcon className="flex-shrink-0 h-5 w-5" aria-hidden="true" />
+									<span className="sr-only">Home</span>
+								</Link>
+							</div>
+						</li>
+						{nav.map((page) => (
+							<li key={page.name}>
+								<div className="flex items-center">
+									<ChevronRightIcon className="flex-shrink-0 h-5 w-5 text-gray-400" aria-hidden="true" />
+									<Link
+										to={page.href}
+										className="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700"
+										aria-current={page.current ? 'page' : undefined}
+									>
+										{page.name}
+									</Link>
+								</div>
+							</li>
+						))}
+					</ol>
+				</nav>
+				<button
+					type="button"
+					className="w-36 mr-5 inline-flex justify-center text-center items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+				>
+					<CollectionIcon className="-ml-1 mr-2 h-5 w-5 text-gray-300" aria-hidden="true" />
+						Generate
+					<ChevronRightIcon className="flex-shrink-0 h-5 w-5 text-gray-400" aria-hidden="true" />
+				</button>
+			</div>
 			<div className="mb-5">
 				<dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
 					<div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
@@ -153,7 +266,7 @@ const EditProject = () => {
 					</div>
 					<div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
 						<dt className="text-sm font-medium text-gray-500 truncate">Total Layers</dt>
-						<dd className="mt-1 text-3xl font-semibold text-gray-900">{layers.length - 1}</dd>
+						<dd className="mt-1 text-3xl font-semibold text-gray-900">{layers.length}</dd>
 					</div>
 					<div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
 						<dt className="text-sm font-medium text-gray-500 truncate">Total Tokens</dt>
@@ -162,27 +275,24 @@ const EditProject = () => {
 				</dl>
 			</div>
 			{/* Layers */}
-			<Layers
+			<LayersContainer
 				addLayer={addLayer}
-				layers={layers}
-				projectId={projectId}
 				handleDragEnd={handleDragEnd}
+				layers={layers}
 				moveTrait={moveTrait}
+				projectId={projectId}
+				removeLayer={removeLayer}
 				setLayers={setLayers}
-				setPreviewPanelOpen={setPreviewPanelOpen}
 				setSelectedLayer={setSelectedLayer}
 				setSelectedTraits={setSelectedTraits}
 				setTraitModalOpen={setTraitModalOpen}
 				setTraitPanelOpen={setTraitPanelOpen}
 			/>
 			<AddTraitModal layerIdToModify={selectedLayer.id} open={traitModalOpen} setOpen={setTraitModalOpen} addTrait={addTrait} />
-			<PreviewPanel
-				previewPanelOpen={previewPanelOpen}
-				setPreviewPanelOpen={setPreviewPanelOpen}
-			/>
 			<TraitPanel
 				layers={layers}
 				moveTrait={moveTrait}
+				removeTrait={removeTrait}
 				selectedLayer={selectedLayer}
 				setTraitModalOpen={setTraitModalOpen}
 				setTraitPanelOpen={setTraitPanelOpen}

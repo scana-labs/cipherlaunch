@@ -1,19 +1,17 @@
 import { useCallback, useEffect, useState } from 'react'
 import { API, graphqlOperation } from 'aws-amplify'
+import Storage from '@aws-amplify/storage'
 
 import {
 	ChevronDownIcon,
-	ChevronRightIcon,
-	MenuIcon,
 	PlusCircleIcon,
-	PhotographIcon,
-	PuzzleIcon,
 	SearchIcon,
 	SortAscendingIcon,
 } from '@heroicons/react/solid'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
 import AddLayersModal from './AddLayersModal'
+import Layer from './Layer'
 import { listLayersUnderProject, listTraitsUnderLayer } from '../graphql/queries';
 
 const getItemStyle = (isDragging) => ({
@@ -23,11 +21,11 @@ const getItemStyle = (isDragging) => ({
 
 const Layers = ({
 	addLayer,
+	handleDragEnd,
 	layers,
 	projectId,
-	handleDragEnd,
+	removeLayer,
 	setLayers,
-	setPreviewPanelOpen,
 	setSelectedLayer,
 	setSelectedTraits,
 	setTraitModalOpen,
@@ -40,34 +38,40 @@ const Layers = ({
 		try {
 			const layers = await API.graphql(graphqlOperation(listLayersUnderProject, { project_id: projectId }))
 			const fetchedLayers = layers?.data?.listLayersUnderProject || []
-			const paddedLayers = fetchedLayers.map(l => ({
+			const paddedLayers = await Promise.all(fetchedLayers.map(async l => ({
 				id: l.layer_id,
 				name: l.name,
-				traits: fetchTraitsForLayer(l.layer_id)
-			}))
+				traits: await fetchTraitsForLayer(l.layer_id)
+			})))
+
+			console.log('Layers', paddedLayers)
 
 			setLayers(paddedLayers)
-			console.log('Layers', layers)
 		}
 		catch (e) {
 			console.log('Error fetching layers:', e)
 		}
 	}, [setLayers, projectId]);
 
-	const fetchTraitsForLayer = async(layerId) => {
+	const fetchTraitsForLayer = async (layerId) => {
 		try {
 			const traits = await API.graphql(graphqlOperation(listTraitsUnderLayer, { layer_id: layerId }))
 			const fetchedTraits = traits?.data?.listTraitsUnderLayer || []
-			const paddedTraits = fetchedTraits.map(t => ({
+			const paddedTraits = await Promise.all(fetchedTraits.map(async t => ({
 				id: t.trait_id,
-				name: t.name
-			}))
+				name: t.name,
+				image_url: await Storage.get(t.image_url), // TODO: Update get options i.e. protected etc
+			})))
+
+			console.log('Traits', paddedTraits)
 
 			return paddedTraits
 		}
 		catch (e) {
-			console.log('Error fetching layers:', e)
+			console.log('Error fetching traits:', e)
 		}
+
+		return []
 	}
 
 	useEffect(() => {
@@ -93,14 +97,6 @@ const Layers = ({
 						>
 							<PlusCircleIcon className="-ml-1 mr-2 h-5 w-5 text-gray-300" aria-hidden="true" />
 							Add Layer
-						</button>
-						<button
-							type="button"
-							className="w-36 mr-5 inline-flex justify-center text-center items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-							onClick={() => setPreviewPanelOpen(true)}
-						>
-							<PhotographIcon className="-ml-1 mr-2 h-5 w-5 text-gray-300" aria-hidden="true" />
-							Token Preview
 						</button>
 						<div className="relative flex-grow focus-within:z-10">
 							<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -137,7 +133,7 @@ const Layers = ({
 			<DragDropContext onDragEnd={handleDragEnd}>
 				{layers.length === 0 ?
 					<div className="h-full w-full flex items-center justify-center mt-5">
-						<p className="font-medium text-gray-700">Oops no cateogories!</p>
+						<p className="font-medium text-gray-700">Oops no layers!</p>
 					</div>
 					:
 					<Droppable droppableId="droppable">
@@ -167,50 +163,14 @@ const Layers = ({
 																snapshot.isDragging,
 															)}
 														>
-															<div className="px-4 py-4 flex items-center sm:px-6">
-																<div className="min-w-0 flex-1 sm:flex sm:items-center">
-																	<MenuIcon className="-ml-1 mr-2 h-5 w-5 text-gray-500" aria-hidden="true" />
-																	<div className="ml-5 truncate">
-																		<div className="flex text-sm">
-																			<p className="font-medium text-blue-600 truncate">{layer.name}</p>
-																		</div>
-																		<div className="mt-2 flex">
-																			<div className="flex items-center text-sm text-gray-500">
-																				<PuzzleIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-																				<p>
-																					{layer.traits.length} traits
-																				</p>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-																<div className="flex ml-5 flex-shrink-0 items-center">
-																	<button
-																		type="button"
-																		className="w-36 mr-5 inline-flex justify-center text-center items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-																		onClick={() => {
-																			setSelectedLayer(layer)
-																			setTraitModalOpen(true)
-																		}}
-																	>
-																		<PlusCircleIcon className="-ml-1 mr-2 h-5 w-5 text-gray-300" aria-hidden="true" />
-																		Add Trait
-																	</button>
-																	<button
-																		type="button"
-																		className="w-36 mr-5 inline-flex justify-center text-center items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-																		onClick={() => {
-																			setSelectedLayer(layer)
-																			setSelectedTraits(layer.traits)
-																			setTraitPanelOpen(true)
-																		}}
-																	>
-																		<PuzzleIcon className="-ml-1 mr-2 h-5 w-5 text-gray-300" aria-hidden="true" />
-																		Traits
-																	</button>
-																	<ChevronRightIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-																</div>
-															</div>
+															<Layer
+																layer={layer}
+																removeLayer={removeLayer}
+																setSelectedLayer={setSelectedLayer}
+																setTraitModalOpen={setTraitModalOpen}
+																setTraitPanelOpen={setTraitPanelOpen}
+																setSelectedTraits={setSelectedTraits}
+															/>
 														</div>
 													</li>
 												</div>

@@ -7,6 +7,7 @@ import Trait from './Trait'
 const TraitPanel = ({
 	layers,
 	moveTrait,
+	removeTrait,
 	selectedLayer,
 	setTraitModalOpen,
 	setTraitPanelOpen,
@@ -51,7 +52,7 @@ const TraitPanel = ({
 											{traits.length > 0 ?
 												traits.map((t, index) => (
 													<div className="m-2 w-full md:w-1/2" key={`trait-${index}`}>
-														<Trait key={index} categories={layers} currentCategory={selectedLayer} moveTrait={moveTrait} trait={t} />
+														<Trait key={index} layers={layers} currentLayer={selectedLayer} moveTrait={moveTrait} removeTrait={removeTrait} trait={t} />
 													</div>
 												))
 												:

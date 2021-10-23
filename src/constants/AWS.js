@@ -1,0 +1,1 @@
+export const BUCKET_NAME = 'cipher-launch-projects174328-dev'

@@ -6,8 +6,15 @@ import isNumeric from '../util/isNumeric'
 
 const AddTraitModal = ({ layerIdToModify, open, setOpen, addTrait }) => {
 	const cancelButtonRef = useRef(null)
+	const [image, setImage] = useState(null)
 	const [traitName, setTraitName] = useState('')
 	const [rarity, setRarity] = useState(0)
+
+	const clearInputFields = () => {
+		// Reset input fields
+		document.getElementById('trait-name').value = ''
+		document.getElementById('trait-rarity').value = ''
+	}
 
 	return (
 		<Transition.Root show={open} as={Fragment}>
@@ -82,10 +89,23 @@ const AddTraitModal = ({ layerIdToModify, open, setOpen, addTrait }) => {
 											<div className="mt-1 border border-gray-300 rounded-md">
 												<label className="cursor-pointer">
 													<div className="flex p-2 items-center justify-between h-9 border-dotted border-gray-300 rounded-md">
-														<p className="font-medium text-gray-700">Choose image</p>
+													<p className="font-medium text-gray-700">{image?.name || 'Choose image'}</p>
 														<CloudUploadIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
 													</div>
-													<input type="file" className="hidden" />
+													<input
+														id="trait-image"
+														type="file"
+														className="hidden"
+														onClick={() => document.getElementById('trait-image').value = null}
+														onChange={(e) => {
+															if (e.target.files.length > 0) {
+																setImage(e.target.files[0])
+															}
+															else {
+																console.log('Error selecting files for trait input')
+															}
+														}}
+													/>
 												</label>
 											</div>
 										</div>
@@ -96,7 +116,10 @@ const AddTraitModal = ({ layerIdToModify, open, setOpen, addTrait }) => {
 								<button
 									type="button"
 									className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm"
-									onClick={() => setOpen(false)}
+									onClick={() => {
+										clearInputFields()
+										setOpen(false)
+									}}
 									ref={cancelButtonRef}
 								>
 									Cancel
@@ -106,7 +129,8 @@ const AddTraitModal = ({ layerIdToModify, open, setOpen, addTrait }) => {
 									className={`${traitName ? '' : 'disabled:opacity-50'} w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm`}
 									onClick={() => {
 										if (traitName && isNumeric(rarity)) {
-											addTrait(traitName, rarity, layerIdToModify)
+											addTrait(traitName, rarity, layerIdToModify, image)
+											clearInputFields()
 											setOpen(false)
 										}
 										else {
