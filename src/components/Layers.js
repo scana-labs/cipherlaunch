@@ -14,7 +14,7 @@ import {
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
 import AddLayersModal from './AddLayersModal'
-import { listLayersUnderProject } from '../graphql/queries';
+import { listLayersUnderProject, listTraitsUnderLayer } from '../graphql/queries';
 
 const getItemStyle = (isDragging) => ({
 	// change background colour if dragging
@@ -43,7 +43,7 @@ const Layers = ({
 			const paddedLayers = fetchedLayers.map(l => ({
 				id: l.layer_id,
 				name: l.name,
-				traits: []
+				traits: fetchTraitsForLayer(l.layer_id)
 			}))
 
 			setLayers(paddedLayers)
@@ -53,6 +53,22 @@ const Layers = ({
 			console.log('Error fetching layers:', e)
 		}
 	}, [setLayers, projectId]);
+
+	const fetchTraitsForLayer = async(layerId) => {
+		try {
+			const traits = await API.graphql(graphqlOperation(listTraitsUnderLayer, { layer_id: layerId }))
+			const fetchedTraits = traits?.data?.listTraitsUnderLayer || []
+			const paddedTraits = fetchedTraits.map(t => ({
+				id: t.trait_id,
+				name: t.name
+			}))
+
+			return paddedTraits
+		}
+		catch (e) {
+			console.log('Error fetching layers:', e)
+		}
+	}
 
 	useEffect(() => {
 		fetchLayers()
