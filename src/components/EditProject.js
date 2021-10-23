@@ -77,16 +77,22 @@ const EditProject = () => {
 		const name = document.getElementById('layer-name').value
 
 		if (name) {
-			const newLayer = {
-				layer_id: uuidv4(),
-				project_id: projectId,
-				name: name,
-				layer_order: `${layers.length + 1}`
+			try {
+				const newLayerInput = {
+					layer_id: uuidv4(),
+					project_id: projectId,
+					name: name,
+					layer_order: `${layers.length + 1}`
+				}
+				const createdLayer = await API.graphql(graphqlOperation(createLayer, { createLayerInput: newLayerInput }))
+				const createdLayerMetadata = createdLayer?.data?.createLayer || []
+				const newLayer = { id: createdLayerMetadata.layer_id, name: createdLayerMetadata.name, traits: [] }
+	
+				setLayers([...layers, newLayer])	
 			}
-			await API.graphql(graphqlOperation(createLayer, { createLayerInput: newLayer }))
-			setLayers([...layers, newLayer])
-
-			document.getElementById('layer-name').value = ''
+			catch (e) {
+				console.log('Error creating new layer:', e)
+			}
 		}
 	}
 
@@ -159,6 +165,7 @@ const EditProject = () => {
 			<Layers
 				addLayer={addLayer}
 				layers={layers}
+				projectId={projectId}
 				handleDragEnd={handleDragEnd}
 				moveTrait={moveTrait}
 				setPreviewPanelOpen={setPreviewPanelOpen}
