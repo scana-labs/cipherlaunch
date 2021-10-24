@@ -77,12 +77,15 @@ class Collection:
         # print(list(items))
 
         # Get trait counts.
-        trait_type_to_trait_counts_dict = defaultdict(lambda: defaultdict(int))
+        layer_to_trait_counts_dict = defaultdict(lambda: defaultdict(int))
         for token in tokens:
-            for trait_type, trait_value in token.token_traits.items():
-                trait_type_to_trait_counts_dict[trait_type][trait_value] += 1
+            for layer, trait_value in token.token_traits.items():
+                layer_to_trait_counts_dict[layer][trait_value] += 1
+        for layer in layer_to_trait_counts_dict.keys():
+            for trait in layer_to_trait_counts_dict[layer].keys():
+                layer_to_trait_counts_dict[layer][trait] /= total_tokens
 
-        token_trait_count_bytes = bytes(json.dumps(trait_type_to_trait_counts_dict).encode(UTF_8_ENCODING))
+        token_trait_count_bytes = bytes(json.dumps(layer_to_trait_counts_dict).encode(UTF_8_ENCODING))
         key = f"{self.collection_id}/trait-counts/trait-counts.json"
         trait_counts_upload_response = s3_client.put_object(
                 Bucket=s3_bucket,
@@ -127,5 +130,5 @@ class Collection:
         logger.debug(
             f"Created collection with id {create_collection_id} and with bucket_url {created_collection_bucket}")
 
-        return created_collection
+        return layer_to_trait_counts_dict, created_collection
 

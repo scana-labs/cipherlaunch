@@ -15,12 +15,13 @@ def handler(event, context):
     logger.debug(f"Received create token collection request for project_id {project_id} and num_tokens {num_tokens}")
 
     collection = Collection(project_id, project_name, base_url)
-    token_collection = collection.generate_tokens(num_tokens)
+    token_trait_distribution_dict, token_collection = collection.generate_tokens(num_tokens)
+    response_body = {"token_trait_distribution": token_trait_distribution_dict, "token_collection": token_collection}
 
     return {
         "statusCode": 200,
         "headers": {
             "Content-Type": "application/json"
         },
-        "body": json.dumps(token_collection)
+        "body": json.dumps(response_body)
     }
