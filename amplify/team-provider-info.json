@@ -18,7 +18,7 @@
       "function": {
         "GenerateTokenCollection": {
           "deploymentBucketName": "amplify-cipherlaunchweb-dev-174328-deployment",
-          "s3Key": "amplify-builds/GenerateTokenCollection-7846484f58455975777a-build.zip"
+          "s3Key": "amplify-builds/GenerateTokenCollection-4b503256516a462f6c67-build.zip"
         },
         "GenerateTokenCollectionImages": {
           "deploymentBucketName": "amplify-cipherlaunchweb-dev-174328-deployment",
