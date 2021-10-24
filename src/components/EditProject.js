@@ -26,68 +26,106 @@ const EditProject = () => {
 	const sumReducer = (previousValue, currentValue) => previousValue + currentValue
 	const productReducer = (previousValue, currentValue) => previousValue * currentValue
 
+	// Try to upload multiple trait images
+	// Return false on error otherwise return list of traits to upload
+	const tryUploadImages = async (images, traitTemplate) => {
+		// TODO: Enforce better image validation
+		// Move validation to modal
+		if (images && images.length > 0) {
+			if (!images.every(image => image instanceof File)) {
+				console.log('One or more invalid File objects used for trait image.', images)
+				return false
+			}
+
+			if (!images.every(image => image.type === 'image/png')) {
+				console.log('One or more invalid image types. Please only upload PNGs.', images)
+				return false
+			}
+
+			try {
+				const newTraitIds = []
+				// Promise.all preserves order
+				const traitsToUpload = await Promise.all(images.map(i => {
+					const traitId = uuidv4()
+					const traitIdImageName = `projects/${projectId}/${traitId}.png`
+					newTraitIds.push(traitId)
+
+					return Storage.put(traitIdImageName, i, {
+						contentType: 'image/png'
+					})
+				}))
+
+				return traitsToUpload.map(({ key }, index) => {
+					const newTrait = { ...traitTemplate }
+					newTrait.image_url = key
+					newTrait.trait_id = newTraitIds[index]
+
+					return newTrait
+				})
+			}
+			catch (error) {
+				console.log('Error uploading trait image:', error)
+			}
+		} else {
+			console.log('No image(s) provided')
+		}
+
+		return false
+	}
+
 	// TODO: Cleanup handlers to not have to be passed down multiple children
 	// name: String
 	// rarity: String
 	// layerId: String
 	// image: File
-	const addTrait = async (name, rarity, layerId, image) => {
-		const traitId = uuidv4()
-
+	const addTrait = async (name, rarity, layerId, images) => {
 		if (name && rarity && layerId) {
-			let addTraitIsSuccess = false
-			const traitIdImageName = `projects/${projectId}/${traitId}.png`
-			const newTrait = {
+			// Default to only uploading one trait
+			let traitsToUpload = [{
+				trait_id: uuidv4(),
 				name,
 				layer_id: layerId,
 				project_id: projectId,
 				rarity,
-				trait_id: traitId,
-			}
+			}]
+			let uploadedTraits = []
 
 			// TODO: Enforce better image validation
 			// Move validation to modal
-			if (image) {
-				let invalidFile = false
+			const uploadedImageTraits = await tryUploadImages(images, traitsToUpload[0])
 
-				if (!image instanceof File) {
-					console.log('Invalid File object used for trait image')
-					invalidFile = true
-				}
-
-				if (image.type !== 'image/png') {
-					console.log('Invalid image type. Please only upload PNGs')
-					invalidFile = true
-				}
-
-				if (!invalidFile) {
-					try {
-						const result = await Storage.put(traitIdImageName, image, {
-							contentType: 'image/png'
-						})
-						newTrait.image_url = result.key // TODO Update public prefix, change to be image_key
-					}
-					catch (error) {
-						console.log('Error uploading trait image:', error)
-					}
-				}
-			} else {
-				console.log('No image provided')
+			if (uploadedImageTraits) {
+				traitsToUpload = uploadedImageTraits
 			}
+
+			console.log('Traits to Upload', traitsToUpload)
 
 			try {
-				await API.graphql(graphqlOperation(createTrait, { createTraitInput: newTrait }))
-				addTraitIsSuccess = true
+				uploadedTraits = await Promise.all(traitsToUpload.map(async t => {
+					return API.graphql(graphqlOperation(createTrait, { createTraitInput: t }))
+				}))
 			}
 			catch (e) {
-				console.log('Error adding trait', e)
+				console.log('Error uploading multiple traits', traitsToUpload, e)
 			}
 
-			if (addTraitIsSuccess) {
+			// Add uploading indicator to layer
+			if (uploadedTraits.length > 0) {
+				console.log('New Traits', uploadedTraits, traitsToUpload)
+
+				// Fetch images for traits
+				const fetchedTraits = await Promise.all(traitsToUpload.map(async t => {
+					const fetchedTrait = { ...t }
+					fetchedTrait.image_url = await Storage.get(t.image_url, { expires: 3600 }) // TODO: Update GET options, consolidate function
+
+					return fetchedTrait
+				}))
+
 				const newLayers = [...layers]
 
-				// Add trait to layer
-				newLayers.filter(c => c.id === layerId)[0].traits.push(newTrait)
+				// Add trait(s) to layer
+				const layerToUpdate = newLayers.filter(c => c.id === layerId)[0]
+				layerToUpdate.traits = layerToUpdate.traits.concat(fetchedTraits)
 
 				setLayers(newLayers)
 			}

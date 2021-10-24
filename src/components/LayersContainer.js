@@ -13,6 +13,7 @@ import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import AddLayersModal from './AddLayersModal'
 import Layer from './Layer'
 import { listLayersUnderProject, listTraitsUnderLayer } from '../graphql/queries';
+import Spinner from './Spinner'
 
 const getItemStyle = (isDragging) => ({
 	// change background colour if dragging
@@ -31,6 +32,7 @@ const Layers = ({
 	setTraitModalOpen,
 	setTraitPanelOpen,
 }) => {
+	const [isSpinning, setIsSpinning] = useState(true)
 	const [layerModalOpen, setLayerModalOpen] = useState(false)
 	const [query, setQuery] = useState('')
 
@@ -43,6 +45,8 @@ const Layers = ({
 				name: l.name,
 				traits: await fetchTraitsForLayer(l.layer_id)
 			})))
+
+			setIsSpinning(false)
 
 			console.log('Layers', paddedLayers)
 
@@ -60,7 +64,7 @@ const Layers = ({
 			const paddedTraits = await Promise.all(fetchedTraits.map(async t => ({
 				id: t.trait_id,
 				name: t.name,
-				image_url: await Storage.get(t.image_url), // TODO: Update get options i.e. protected etc
+				image_url: await Storage.get(t.image_url, { expires: 3600 }), // TODO: Update get options i.e. protected etc
 			})))
 
 			console.log('Traits', paddedTraits)
@@ -131,7 +135,8 @@ const Layers = ({
 				</div>
 			</div>
 			<DragDropContext onDragEnd={handleDragEnd}>
-				{layers.length === 0 ?
+				{isSpinning && <Spinner />}
+				{!isSpinning && layers.length === 0 ?
 					<div className="h-full w-full flex items-center justify-center mt-5">
 						<p className="font-medium text-gray-700">Oops no layers!</p>
 					</div>

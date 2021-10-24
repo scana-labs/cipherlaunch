@@ -78,7 +78,7 @@ const NavBarPrivate = () => {
 										leaveFrom="transform opacity-100 scale-100"
 										leaveTo="transform opacity-0 scale-95"
 									>
-										<Menu.Items className="z-100 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+										<Menu.Items className="z-50 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
 											<Menu.Item>
 												{({ active }) => (
 													<div
@@ -136,7 +136,7 @@ const NavBarPrivate = () => {
 								Projects
 							</Link>
 							<Link
-								to={`${DEFAULT_PROJECTS_ROUTE}${DEFAULT_COLLECTIONS_ROUTE}`}
+								to={DEFAULT_COLLECTIONS_ROUTE}
 								className={`${selected === NAV_BAR_ITEMS.projects ? 'bg-blue-50 border-blue-500 text-blue-700' : ''} border-transparent text-base hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}
 								onClick={() => setSelected(NAV_BAR_ITEMS.collections)}
 							>

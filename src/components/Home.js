@@ -4,7 +4,7 @@ import {
 } from "react-router-dom";
 
 import Collections from "./Collections";
-import { DEFAULT_COLLECTIONS_ROUTE, DEFAULT_PROJECTS_ROUTE } from '../constants/Routes'
+import { DEFAULT_COLLECTIONS_ROUTE } from '../constants/Routes'
 import EditProject from './EditProject'
 import NavBarPrivate from './NavBarPrivate'
 import { PrivateRoute } from '../App';
@@ -24,11 +24,11 @@ const Home = (props) => {
 						<PrivateRoute exact path={path}>
 							<Projects projects={props.projects} setProjects={props.setProjects} />
 						</PrivateRoute>
-						<PrivateRoute path={`${DEFAULT_PROJECTS_ROUTE}/:projectId`}>
-							<EditProject />
-						</PrivateRoute>
-						<PrivateRoute path={`${DEFAULT_COLLECTIONS_ROUTE}`}>
+						<PrivateRoute exact path={`${path}${DEFAULT_COLLECTIONS_ROUTE}`}>
 							<Collections />
+						</PrivateRoute>
+						<PrivateRoute exact path={`${path}/:projectId`}>
+							<EditProject />
 						</PrivateRoute>
 					</Switch>
 				</div>

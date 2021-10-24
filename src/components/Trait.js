@@ -30,11 +30,11 @@ const Trait = ({ layers, currentLayer, moveTrait, removeTrait, trait }) => {
 
 	return (
 		<div key={trait.id} className="group">
-			<div className="aspect-w-16 aspect-h-16">
+			<div className="flex justify-center items-center">
 			{trait.image_url ?
 				<img
 					src={trait.image_url}
-					className="rounded-lg overflow-hidden"
+					className="rounded-lg overflow-hidden w-32 h-32"
 					alt="trait"
 				/>
 				:
@@ -110,7 +110,7 @@ const Trait = ({ layers, currentLayer, moveTrait, removeTrait, trait }) => {
 						leaveFrom="transform opacity-100 scale-100"
 						leaveTo="transform opacity-0 scale-95"
 					>
-						<Menu.Items className="z-100 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+						<Menu.Items className="z-50 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
 							<Menu.Item>
 								{({ active }) => (
 									<div

@@ -13,22 +13,21 @@ import {
 	UserAddIcon,
 } from '@heroicons/react/solid'
 
+import classNames from '../util/classNames'
 import CreateProjectModal from './CreateProjectModal'
 import { createProject, deleteProject } from '../graphql/mutations'
 import { listProjectsUnderUser } from '../graphql/queries'
 import { useAuth } from '../auth'
 import { v4 as uuidv4 } from 'uuid';
 import { DEFAULT_PROJECTS_ROUTE } from '../constants/Routes';
-
-function classNames(...classes) {
-	return classes.filter(Boolean).join(' ')
-}
+import Spinner from './Spinner'
 
 const colors = ['red', 'blue', 'pink', 'purple', 'indigo', 'yellow', 'green']
 
 const Projects = ({ projects, setProjects }) => {
 	const { user } = useAuth()
 	const [modalOpen, setModalOpen] = useState(false)
+	const [isSpinning, setIsSpinning] = useState(true)
 
 	const fetchProjects = useCallback(async () => {
 		try {
@@ -52,6 +51,7 @@ const Projects = ({ projects, setProjects }) => {
 			}))
 
 			setProjects(paddedProjects)
+			setIsSpinning(false)
 			console.log('Projects', projects)
 		}
 		catch (e) {
@@ -111,7 +111,7 @@ const Projects = ({ projects, setProjects }) => {
 
 	return (
 		<div className="h-full flex flex-col flex-1 overflow-hidden">
-			<main className="h-full flex-1 relative z-0 overflow-y-auto focus:outline-none">
+			<main className="h-full flex-1 relative z-0 focus:outline-none">
 				{/* Page title & actions */}
 				<div className="px-4 py-4 sm:flex sm:items-center sm:justify-between sm:px-6 lg:px-8">
 					<div className="flex-1 min-w-0">
@@ -159,7 +159,8 @@ const Projects = ({ projects, setProjects }) => {
 				{/* Projects table (small breakpoint and up) */}
 				<div className="h-full hidden sm:block">
 					<div className="h-full align-middle min-w-full overflow-x-auto shadow overflow-hidden sm:rounded-lg">
-						<table className="min-w-full divide-y divide-gray-200">
+						{isSpinning && <Spinner />}
+						{!isSpinning && <table className="min-w-full divide-y divide-gray-200">
 							<thead>
 								<tr>
 									<th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -308,7 +309,7 @@ const Projects = ({ projects, setProjects }) => {
 									</tr>
 								))}
 							</tbody>
-						</table>
+						</table>}
 					</div>
 				</div>
 				<CreateProjectModal open={modalOpen} setOpen={setModalOpen} addProject={addProject} />
