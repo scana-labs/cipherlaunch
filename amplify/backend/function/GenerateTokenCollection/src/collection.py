@@ -130,5 +130,5 @@ class Collection:
         logger.debug(
             f"Created collection with id {create_collection_id} and with bucket_url {created_collection_bucket}")
 
-        return created_collection
+        return layer_to_trait_counts_dict, created_collection
 
