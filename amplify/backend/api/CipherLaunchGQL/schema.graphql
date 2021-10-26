@@ -85,6 +85,7 @@ type Mutation {
 type Query {
   getCollection(collection_id: String!): Collection
   listCollections: [Collection]
+  listCollectionsUnderProject(project_id: String!): [Collection]
   getProject(project_id: String!): Project
   listProjects: [Project]
   listProjectsUnderUser(user_id: String!): [Project]

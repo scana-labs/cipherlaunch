@@ -21,6 +21,16 @@ export const listCollections = /* GraphQL */ `
     }
   }
 `;
+export const listCollectionsUnderProject = /* GraphQL */ `
+  query ListCollectionsUnderProject($project_id: String!) {
+    listCollectionsUnderProject(project_id: $project_id) {
+      collection_id
+      project_id
+      s3_url
+      create_timestamp
+    }
+  }
+`;
 export const getProject = /* GraphQL */ `
   query GetProject($project_id: String!) {
     getProject(project_id: $project_id) {
