@@ -21,9 +21,10 @@ UTF_8_ENCODING = 'UTF-8'
 
 class Collection:
 
-    def __init__(self, project_id, project_name, base_url):
+    def __init__(self, project_id, project_name, base_url, collection_name):
         self.project_id = project_id
         self.project_name = project_name
+        self.collection_name = collection_name
         self.base_url = base_url
         self.layers = self.get_project_layers()  # list of layers in order of ascending layer_order number
         self.layer_trait_rarities, self.trait_images = self.get_metadata_maps()
@@ -122,13 +123,14 @@ class Collection:
 
             s3_url = f"s3://{s3_bucket}/{self.collection_id}"
 
-        created_collection = create_new_collection(self.collection_id, self.project_id, s3_url)
+        created_collection = create_new_collection(self.collection_id, self.collection_name, self.project_id, s3_url)
 
         create_collection_id = created_collection["collection_id"]
         created_collection_bucket = created_collection["s3_url"]
+        created_collection_name = created_collection["name"]
 
         logger.debug(
-            f"Created collection with id {create_collection_id} and with s3_url {created_collection_bucket}")
+            f"Created collection with id {create_collection_id}, name {created_collection_name}, and with s3_url {created_collection_bucket}")
 
         return layer_to_trait_counts_dict, created_collection
 
