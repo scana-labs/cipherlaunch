@@ -1,21 +1,21 @@
 input CreateCollectionInput {
   collection_id: String!
   project_id: String!
-  bucket_url: String!
+  s3_url: String!
   create_timestamp: String!
 }
 
 type Collection {
   collection_id: String!
   project_id: String!
-  bucket_url: String!
+  s3_url: String!
   create_timestamp: String!
 }
 
 input UpdateCollectionInput {
   collection_id: String!
   project_id: String
-  bucket_url: String
+  s3_url: String
   create_timestamp: String
 }
 

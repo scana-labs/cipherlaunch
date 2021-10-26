@@ -6,7 +6,7 @@ export const onCreateCollection = /* GraphQL */ `
     onCreateCollection {
       collection_id
       project_id
-      bucket_url
+      s3_url
       create_timestamp
     }
   }

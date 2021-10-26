@@ -42,7 +42,7 @@ class Collection:
             for trait in layer_traits:
                 traits.append(trait["name"])
                 rarities.append(trait["rarity"])
-                trait_images[trait["name"]] = trait["bucket_url"]
+                trait_images[trait["name"]] = trait["image_url"]
             layers_trait_rarities[layer["name"]] = (traits, rarities)
         return layers_trait_rarities, trait_images
 
@@ -50,7 +50,7 @@ class Collection:
         # Check that we have enough traits to generate total_tokens.
         total_possible = 1
         for layer in self.layer_trait_rarities:
-            traits = self.layer_trait_rarities[layer]
+            traits, _ = self.layer_trait_rarities[layer]
             if traits:
                 total_possible *= len(traits)
         if total_possible < total_tokens:
@@ -120,15 +120,15 @@ class Collection:
                                 f"{key}")
             logger.debug(f"Uploaded metadata for token_id {token.token_id} to {key}")
 
-            bucket_url = f"s3://{s3_bucket}/{self.collection_id}"
+            s3_url = f"s3://{s3_bucket}/{self.collection_id}"
 
-        created_collection = create_new_collection(self.collection_id, self.project_id, bucket_url)
+        created_collection = create_new_collection(self.collection_id, self.project_id, s3_url)
 
         create_collection_id = created_collection["collection_id"]
-        created_collection_bucket = created_collection["bucket_url"]
+        created_collection_bucket = created_collection["s3_url"]
 
         logger.debug(
-            f"Created collection with id {create_collection_id} and with bucket_url {created_collection_bucket}")
+            f"Created collection with id {create_collection_id} and with s3_url {created_collection_bucket}")
 
         return layer_to_trait_counts_dict, created_collection
 

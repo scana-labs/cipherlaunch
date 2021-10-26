@@ -6,7 +6,7 @@ export const deleteCollection = /* GraphQL */ `
     deleteCollection(collection_id: $collection_id) {
       collection_id
       project_id
-      bucket_url
+      s3_url
       create_timestamp
     }
   }
@@ -16,7 +16,7 @@ export const createCollection = /* GraphQL */ `
     createCollection(createCollectionInput: $createCollectionInput) {
       collection_id
       project_id
-      bucket_url
+      s3_url
       create_timestamp
     }
   }
@@ -26,7 +26,7 @@ export const updateCollection = /* GraphQL */ `
     updateCollection(updateCollectionInput: $updateCollectionInput) {
       collection_id
       project_id
-      bucket_url
+      s3_url
       create_timestamp
     }
   }

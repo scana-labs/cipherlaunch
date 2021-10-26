@@ -6,7 +6,7 @@ export const getCollection = /* GraphQL */ `
     getCollection(collection_id: $collection_id) {
       collection_id
       project_id
-      bucket_url
+      s3_url
       create_timestamp
     }
   }
@@ -16,7 +16,7 @@ export const listCollections = /* GraphQL */ `
     listCollections {
       collection_id
       project_id
-      bucket_url
+      s3_url
       create_timestamp
     }
   }

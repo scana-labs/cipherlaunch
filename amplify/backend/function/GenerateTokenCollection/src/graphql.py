@@ -35,7 +35,7 @@ def get_traits_under_layer(layer_id):
             listTraitsUnderLayer(layer_id: $layer_id) {
                 name
                 rarity
-                bucket_url
+                image_url
             }
         }
     """
@@ -44,11 +44,11 @@ def get_traits_under_layer(layer_id):
     return response_data["listTraitsUnderLayer"]
 
 
-def create_new_collection(collection_id, project_id, bucket_url):
+def create_new_collection(collection_id, project_id, s3_url):
     mutation = """
         mutation ($input : CreateCollectionInput!) {
             createCollection(createCollectionInput: $input) {
-                bucket_url
+                s3_url
                 collection_id
             } 
         }  
@@ -57,7 +57,7 @@ def create_new_collection(collection_id, project_id, bucket_url):
     variables = {"input": {
         "collection_id": collection_id,
         "project_id": project_id,
-        "bucket_url": bucket_url,
+        "s3_url": s3_url,
         "create_timestamp": datetime.utcnow().isoformat()
         }
     }
