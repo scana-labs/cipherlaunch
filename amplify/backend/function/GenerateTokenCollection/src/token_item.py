@@ -14,7 +14,9 @@ class Token:
     @classmethod
     def random(cls, rarities) -> Token:
         token_traits = {}
-        for category, (traits, rarities) in rarities.items():
+        for category, trait_rarities in rarities.items():
+            traits = list(trait_rarities.keys())
+            rarities = list(trait_rarities.values())
             if traits and rarities:
                 token_traits[category] = random.choices(traits, rarities)[0]
         return cls(token_traits)

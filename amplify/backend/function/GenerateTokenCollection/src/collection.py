@@ -37,21 +37,19 @@ class Collection:
         layers_trait_rarities = {}
         trait_images = {}
         for layer in self.layers:
-            traits = []
-            rarities = []
+            trait_rarities = {}
             layer_traits = get_traits_under_layer(layer["layer_id"])
             for trait in layer_traits:
-                traits.append(trait["name"])
-                rarities.append(trait["rarity"])
+                trait_rarities[trait["name"]] = trait["rarity"]
                 trait_images[trait["name"]] = trait["image_url"]
-            layers_trait_rarities[layer["name"]] = (traits, rarities)
+            layers_trait_rarities[layer["name"]] = trait_rarities
         return layers_trait_rarities, trait_images
 
     def generate_tokens(self, total_tokens, token_id_offset=0):
         # Check that we have enough traits to generate total_tokens.
         total_possible = 1
         for layer in self.layer_trait_rarities:
-            traits, _ = self.layer_trait_rarities[layer]
+            traits = list(self.layer_trait_rarities[layer].keys())
             if traits:
                 total_possible *= len(traits)
         if total_possible < total_tokens:
@@ -78,16 +76,17 @@ class Collection:
         # print(list(items))
 
         # Get trait counts.
-        layer_to_trait_counts_dict = defaultdict(lambda: defaultdict(int))
+        layer_to_trait_counts_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))
         for token in tokens:
             for layer, trait_value in token.token_traits.items():
-                layer_to_trait_counts_dict[layer][trait_value] += 1
+                layer_to_trait_counts_dict[layer][trait_value]["actual_rarity"] += 1
         for layer in layer_to_trait_counts_dict.keys():
             for trait in layer_to_trait_counts_dict[layer].keys():
-                layer_to_trait_counts_dict[layer][trait] /= total_tokens
+                layer_to_trait_counts_dict[layer][trait]["input_rarity"] = self.layer_trait_rarities[layer][trait]
+                layer_to_trait_counts_dict[layer][trait]["actual_rarity"] /= total_tokens
 
         token_trait_count_bytes = bytes(json.dumps(layer_to_trait_counts_dict).encode(UTF_8_ENCODING))
-        key = f"{self.collection_id}/trait-counts/trait-counts.json"
+        key = f"{self.collection_id}/trait-counts/trait-distribution.json"
         trait_counts_upload_response = s3_client.put_object(
                 Bucket=s3_bucket,
                 Key=key,
