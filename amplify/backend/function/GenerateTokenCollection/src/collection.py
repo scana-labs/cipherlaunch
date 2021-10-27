@@ -120,7 +120,7 @@ class Collection:
                                 f"{key}")
             logger.debug(f"Uploaded metadata for token_id {token.token_id} to {key}")
 
-            s3_url = f"s3://{s3_bucket}/{self.collection_id}"
+        s3_url = f"s3://{s3_bucket}/{self.collection_id}"
 
         created_collection = create_new_collection(self.collection_id, self.collection_name, self.project_id, s3_url)
 
