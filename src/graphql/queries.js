@@ -7,7 +7,6 @@ export const getCollection = /* GraphQL */ `
       collection_id
       name
       project_id
-      s3_url
       create_timestamp
     }
   }
@@ -18,7 +17,6 @@ export const listCollections = /* GraphQL */ `
       collection_id
       name
       project_id
-      s3_url
       create_timestamp
     }
   }
@@ -29,7 +27,6 @@ export const listCollectionsUnderProject = /* GraphQL */ `
       collection_id
       name
       project_id
-      s3_url
       create_timestamp
     }
   }

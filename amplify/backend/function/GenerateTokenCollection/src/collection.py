@@ -86,7 +86,7 @@ class Collection:
                 layer_to_trait_counts_dict[layer][trait]["actual_rarity"] /= total_tokens
 
         token_trait_count_bytes = bytes(json.dumps(layer_to_trait_counts_dict).encode(UTF_8_ENCODING))
-        key = f"{self.collection_id}/trait-counts/trait-distribution.json"
+        key = f"public/projects/{self.project_id}/collections/{self.collection_id}/trait-counts/trait-distribution.json"
         trait_counts_upload_response = s3_client.put_object(
                 Bucket=s3_bucket,
                 Key=key,
@@ -104,7 +104,7 @@ class Collection:
         # Write each item's metadata to a separate metadata file.
         for token in tokens:
             metadata_bytes = bytes(json.dumps(token.metadata(self.project_name, self.base_url)).encode(UTF_8_ENCODING))
-            key = f"{self.collection_id}/metadata/{token.token_id}.json"
+            key = f"public/projects/{self.project_id}/collections/{self.collection_id}/metadata/{token.token_id}.json"
             metadata_upload_response = s3_client.put_object(
                 Bucket=s3_bucket,
                 Key=key,
@@ -120,16 +120,13 @@ class Collection:
                                 f"{key}")
             logger.debug(f"Uploaded metadata for token_id {token.token_id} to {key}")
 
-        s3_url = f"s3://{s3_bucket}/{self.collection_id}"
-
-        created_collection = create_new_collection(self.collection_id, self.collection_name, self.project_id, s3_url)
+        created_collection = create_new_collection(self.collection_id, self.collection_name, self.project_id)
 
         create_collection_id = created_collection["collection_id"]
-        created_collection_bucket = created_collection["s3_url"]
         created_collection_name = created_collection["name"]
 
         logger.debug(
-            f"Created collection with id {create_collection_id}, name {created_collection_name}, and with s3_url {created_collection_bucket}")
+            f"Created collection with id {create_collection_id} and name {created_collection_name}")
 
         return layer_to_trait_counts_dict, created_collection
 
