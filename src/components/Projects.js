@@ -16,6 +16,7 @@ import {
 import classNames from '../util/classNames'
 import CreateProjectModal from './CreateProjectModal'
 import { createProject, deleteProject } from '../graphql/mutations'
+import ProjectEditModal from './ProjectEditModal'
 import { listProjectsUnderUser } from '../graphql/queries'
 import { useAuth } from '../auth'
 import { v4 as uuidv4 } from 'uuid';
@@ -26,7 +27,8 @@ const colors = ['red', 'blue', 'pink', 'purple', 'indigo', 'yellow', 'green']
 
 const Projects = ({ projects, setProjects }) => {
 	const { user } = useAuth()
-	const [modalOpen, setModalOpen] = useState(false)
+	const [createProjectModalOpen, setCreateProjectModalOpen] = useState(false)
+	const [editProjectModalOpen, setEditProjectModalOpen] = useState(false)
 	const [isSpinning, setIsSpinning] = useState(true)
 
 	const fetchProjects = useCallback(async () => {
@@ -35,7 +37,7 @@ const Projects = ({ projects, setProjects }) => {
 			const fetchedProjects = projects?.data?.listProjectsUnderUser || []
 			const paddedProjects = fetchedProjects.map(p => ({
 				id: p.project_id,
-				title: p.name || 'CipherLaunch',
+				name: p.name || 'Project',
 				initials: p.name?.split(' ').slice(0, 2).map(i => i[0]).join('') || 'CL',
 				members: [
 					{
@@ -65,7 +67,7 @@ const Projects = ({ projects, setProjects }) => {
 			const newLocalProject = {
 				id: `${projects.length + 1}`,
 				project_id: `${projects.length + 1}`,
-				title: projectName || 'CipherLaunch',
+				name: projectName || 'Project',
 				initials: projectName.name?.split(' ').slice(0, 2).map(i => i[0]).join('') || 'CL',
 				members: [
 					{
@@ -79,7 +81,6 @@ const Projects = ({ projects, setProjects }) => {
 				pinned: true,
 				bgColorClass: `bg-${colors[Math.floor(Math.random() * colors.length)]}-600`,
 				user_id: '1',
-				name: projectName,
 			}
 			const newProject = {
 				project_id: uuidv4(),
@@ -93,6 +94,10 @@ const Projects = ({ projects, setProjects }) => {
 		catch (e) {
 			console.log('Error adding project:', e)
 		}
+	}
+
+	function editProject() {
+
 	}
 
 	async function removeProject(projectId) {
@@ -121,10 +126,10 @@ const Projects = ({ projects, setProjects }) => {
 						<button
 							type="button"
 							className="order-0 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:order-1 sm:ml-3"
-							onClick={() => setModalOpen(true)}
+							onClick={() => setCreateProjectModalOpen(true)}
 						>
 							Create Project
-					</button>
+						</button>
 					</div>
 				</div>
 
@@ -136,21 +141,21 @@ const Projects = ({ projects, setProjects }) => {
 					<ul className="mt-3 border-t border-gray-200 divide-y divide-gray-100">
 						{projects.map((project) => (
 							<li key={project.id}>
-								<a href="/" className="group flex items-center justify-between px-4 py-4 hover:bg-gray-50 sm:px-6">
+								<Link to={`${DEFAULT_PROJECTS_ROUTE}/${project.id}/editProject`} className="group flex items-center justify-between px-4 py-4 hover:bg-gray-50 sm:px-6">
 									<span className="flex items-center truncate space-x-3">
 										<span
 											className={classNames(project.bgColorClass, 'w-2.5 h-2.5 flex-shrink-0 rounded-full')}
 											aria-hidden="true"
 										/>
 										<span className="font-medium truncate text-sm leading-6">
-											{project.title}
+											{project.name}
 										</span>
 									</span>
 									<ChevronRightIcon
 										className="ml-4 h-5 w-5 text-gray-400 group-hover:text-gray-500"
 										aria-hidden="true"
 									/>
-								</a>
+								</Link>
 							</li>
 						))}
 					</ul>
@@ -184,9 +189,9 @@ const Projects = ({ projects, setProjects }) => {
 													className={classNames(project.bgColorClass, 'flex-shrink-0 w-2.5 h-2.5 rounded-full')}
 													aria-hidden="true"
 												/>
-												<Link to={`${DEFAULT_PROJECTS_ROUTE}/${project.id}`} className="truncate hover:text-gray-600">
+												<Link to={`${DEFAULT_PROJECTS_ROUTE}/${project.id}/editProject`} className="truncate hover:text-gray-600">
 													<span>
-														{project.title}
+														{project.name}
 													</span>
 												</Link>
 											</div>
@@ -232,19 +237,19 @@ const Projects = ({ projects, setProjects }) => {
 														<div className="py-1">
 															<Menu.Item>
 																{({ active }) => (
-																	<a
-																		href={DEFAULT_PROJECTS_ROUTE}
+																	<div
 																		className={classNames(
 																			active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
 																			'group flex items-center px-4 py-2 text-sm'
 																		)}
+																		onClick={() => setEditProjectModalOpen(true)}
 																	>
 																		<PencilAltIcon
 																			className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
 																			aria-hidden="true"
 																		/>
 																		Edit
-																	</a>
+																	</div>
 																)}
 															</Menu.Item>
 															<Menu.Item>
@@ -312,7 +317,8 @@ const Projects = ({ projects, setProjects }) => {
 						</table>}
 					</div>
 				</div>
-				<CreateProjectModal open={modalOpen} setOpen={setModalOpen} addProject={addProject} />
+				<CreateProjectModal open={createProjectModalOpen} setOpen={setCreateProjectModalOpen} addProject={addProject} />j
+				<ProjectEditModal open={editProjectModalOpen} setOpen={setEditProjectModalOpen} editProject={editProject} />
 			</main>
 		</div>
 	)

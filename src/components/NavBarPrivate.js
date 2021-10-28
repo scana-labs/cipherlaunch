@@ -1,22 +1,14 @@
 import { Fragment, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { Auth } from 'aws-amplify';
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
 
-import { DEFAULT_PROJECTS_ROUTE, DEFAULT_COLLECTIONS_ROUTE } from '../constants/Routes'
+import { DEFAULT_LOGIN_ROUTE, DEFAULT_PROJECTS_ROUTE } from '../constants/Routes'
 import { useAuth } from '../auth'
 
 function classNames(...classes) {
 	return classes.filter(Boolean).join(' ')
-}
-
-async function signOut() {
-    try {
-        await Auth.signOut();
-    } catch (error) {
-        console.log('error signing out: ', error);
-    }
 }
 
 const NAV_BAR_ITEMS = {
@@ -25,8 +17,18 @@ const NAV_BAR_ITEMS = {
 }
 
 const NavBarPrivate = () => {
-	const [selected, setSelected] = useState(NAV_BAR_ITEMS.projects)
 	const { user } = useAuth()
+	const history = useHistory()
+	const [selected, setSelected] = useState(NAV_BAR_ITEMS.projects)
+
+	async function signOut() {
+		try {
+			await Auth.signOut();
+			history.push(DEFAULT_LOGIN_ROUTE)
+		} catch (error) {
+			console.log('error signing out: ', error);
+		}
+	}
 
 	return (
 		<Disclosure as="nav" className="bg-white shadow">
@@ -46,13 +48,6 @@ const NavBarPrivate = () => {
 										onClick={() => setSelected(NAV_BAR_ITEMS.projects)}
 									>
 										Projects	
-									</Link>
-									<Link
-										to={`${DEFAULT_PROJECTS_ROUTE}${DEFAULT_COLLECTIONS_ROUTE}`}
-										className={`${selected === NAV_BAR_ITEMS.collections ? 'border-blue-500' : ''} border-transparent text-gray-900 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-										onClick={() => setSelected(NAV_BAR_ITEMS.collections)}
-									>
-										Collections
 									</Link>
 								</div>
 							</div>
@@ -101,7 +96,7 @@ const NavBarPrivate = () => {
 												{({ active }) => (
 													<div
 														className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-														onClick={signOut}
+														onClick={() => signOut()}
 													>
 														Sign out
 													</div>
@@ -135,13 +130,6 @@ const NavBarPrivate = () => {
 							>
 								Projects
 							</Link>
-							<Link
-								to={DEFAULT_COLLECTIONS_ROUTE}
-								className={`${selected === NAV_BAR_ITEMS.projects ? 'bg-blue-50 border-blue-500 text-blue-700' : ''} border-transparent text-base hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}
-								onClick={() => setSelected(NAV_BAR_ITEMS.collections)}
-							>
-								Collections
-							</Link>
 						</div>
 						<div className="pt-4 pb-3 border-t border-gray-200">
 							<div className="flex items-center px-4">
@@ -170,7 +158,7 @@ const NavBarPrivate = () => {
 								</div>
 								<div
 									className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-									onClick={signOut}
+									onClick={() => signOut()}
 								>
 									Sign out
 								</div>

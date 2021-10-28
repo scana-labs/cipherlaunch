@@ -61,10 +61,12 @@ const Layers = ({
 		try {
 			const traits = await API.graphql(graphqlOperation(listTraitsUnderLayer, { layer_id: layerId }))
 			const fetchedTraits = traits?.data?.listTraitsUnderLayer || []
+			console.log('Fetched Traits', fetchedTraits)
 			const paddedTraits = await Promise.all(fetchedTraits.map(async t => ({
 				id: t.trait_id,
 				name: t.name,
 				image_url: await Storage.get(t.image_url, { expires: 3600 }), // TODO: Update get options i.e. protected etc
+				rarity: t.rarity,
 			})))
 
 			console.log('Traits', paddedTraits)

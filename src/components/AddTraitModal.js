@@ -71,13 +71,16 @@ const AddTraitModal = ({ layerIdToModify, open, setOpen, addTrait }) => {
 											<label className="block text-left text-sm font-medium text-gray-700">
 												Rarity
 											</label>
-											<div className="mt-1">
+											<div className="mt-1 flex">
+												<span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+													%
+												</span>
 												<input
 													type="text"
 													name="trait-rarity"
 													id="trait-rarity"
-													className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-													placeholder="0.01"
+													className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm border-gray-300"
+													placeholder="Trait Percentage e.g. %5"
 													onChange={(e) => setRarity(e.target.value)}
 												/>
 											</div>
