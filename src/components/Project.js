@@ -3,7 +3,7 @@ import {
 	CollectionIcon,
 	PencilAltIcon,
 } from '@heroicons/react/solid'
-import { Link, useLocation, useParams, useRouteMatch, Switch } from 'react-router-dom'
+import { Link, useParams, useRouteMatch, Switch } from 'react-router-dom'
 import { API, graphqlOperation } from '@aws-amplify/api'
 import Storage from '@aws-amplify/storage'
 import { v4 as uuidv4 } from 'uuid';
@@ -22,7 +22,6 @@ const defaultLayer = { id: -1, name: 'Default Layer', traits: [] }
 
 const Project = ({ projects }) => {
 	const { projectId } = useParams() // Extract project_id from path
-	const { pathname } = useLocation()
 	const { path } = useRouteMatch()
 
 	const [isFetchingProject, setIsFetchingProject] = useState(false)
@@ -330,7 +329,7 @@ const Project = ({ projects }) => {
 							{tabs.map((tab) => (
 								<Link
 									key={tab.name}
-									to={pathname.split('/').slice(0, -1).join('/') + tab.href}
+									to={`/projects/${projectId}${tab.href}`}
 									className={classNames(
 										tab.current
 											? 'border-blue-500 text-blue-600'
