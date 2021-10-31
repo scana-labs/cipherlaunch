@@ -1,4 +1,4 @@
 {
   "version": "2018-05-29",
-  "statements":   ["SELECT * FROM Layer WHERE layer_id='$ctx.args.layer_id'", "DELETE FROM Layer WHERE layer_id='$ctx.args.layer_id'"]
+  "statements":   ["SELECT * FROM Layer WHERE layer_id='$ctx.args.layer_id'", "DELETE FROM Trait WHERE layer_id='$ctx.args.layer_id'; DELETE FROM Layer WHERE layer_id='$ctx.args.layer_id'"]
 }

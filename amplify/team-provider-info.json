@@ -18,11 +18,11 @@
       "function": {
         "GenerateTokenCollection": {
           "deploymentBucketName": "amplify-cipherlaunchweb-dev-174328-deployment",
-          "s3Key": "amplify-builds/GenerateTokenCollection-56367348446c54727863-build.zip"
+          "s3Key": "amplify-builds/GenerateTokenCollection-59777362535473587065-build.zip"
         },
         "GenerateTokenCollectionImages": {
           "deploymentBucketName": "amplify-cipherlaunchweb-dev-174328-deployment",
-          "s3Key": "amplify-builds/GenerateTokenCollectionImages-2f63577538596f35314c-build.zip"
+          "s3Key": "amplify-builds/GenerateTokenCollectionImages-367433784b73326e476e-build.zip"
         }
       },
       "api": {
