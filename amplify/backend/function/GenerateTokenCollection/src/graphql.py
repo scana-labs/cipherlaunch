@@ -44,12 +44,13 @@ def get_traits_under_layer(layer_id):
     return response_data["listTraitsUnderLayer"]
 
 
-def create_new_collection(collection_id, collection_name, project_id):
+def create_new_collection(collection_id, collection_name, project_id, num_of_tokens):
     mutation = """
         mutation ($input : CreateCollectionInput!) {
             createCollection(createCollectionInput: $input) {
                 collection_id
                 name
+                num_of_tokens
                 
             } 
         }  
@@ -58,6 +59,7 @@ def create_new_collection(collection_id, collection_name, project_id):
     variables = {"input": {
         "collection_id": collection_id,
         "name": collection_name,
+        "num_of_tokens": num_of_tokens,
         "project_id": project_id,
         "create_timestamp": datetime.utcnow().isoformat()
         }

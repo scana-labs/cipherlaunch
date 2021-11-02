@@ -120,7 +120,7 @@ class Collection:
                                 f"{key}")
             logger.debug(f"Uploaded metadata for token_id {token.token_id} to {key}")
 
-        created_collection = create_new_collection(self.collection_id, self.collection_name, self.project_id)
+        created_collection = create_new_collection(self.collection_id, self.collection_name, self.project_id, total_tokens)
 
         create_collection_id = created_collection["collection_id"]
         created_collection_name = created_collection["name"]

@@ -1,6 +1,7 @@
 input CreateCollectionInput {
   collection_id: String!
   name: String!
+  num_of_tokens: Int!
   project_id: String!
   create_timestamp: String!
 }
@@ -8,6 +9,7 @@ input CreateCollectionInput {
 type Collection {
   collection_id: String!
   name: String!
+  num_of_tokens: Int!
   project_id: String!
   create_timestamp: String!
 }
@@ -15,6 +17,7 @@ type Collection {
 input UpdateCollectionInput {
   collection_id: String!
   name: String
+  num_of_tokens: Int
   project_id: String
   create_timestamp: String
 }

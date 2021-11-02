@@ -6,6 +6,7 @@ export const getCollection = /* GraphQL */ `
     getCollection(collection_id: $collection_id) {
       collection_id
       name
+      num_of_tokens
       project_id
       create_timestamp
     }
@@ -16,6 +17,7 @@ export const listCollections = /* GraphQL */ `
     listCollections {
       collection_id
       name
+      num_of_tokens
       project_id
       create_timestamp
     }
@@ -26,6 +28,7 @@ export const listCollectionsUnderProject = /* GraphQL */ `
     listCollectionsUnderProject(project_id: $project_id) {
       collection_id
       name
+      num_of_tokens
       project_id
       create_timestamp
     }

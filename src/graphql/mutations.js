@@ -6,6 +6,7 @@ export const deleteCollection = /* GraphQL */ `
     deleteCollection(collection_id: $collection_id) {
       collection_id
       name
+      num_of_tokens
       project_id
       create_timestamp
     }
@@ -16,6 +17,7 @@ export const createCollection = /* GraphQL */ `
     createCollection(createCollectionInput: $createCollectionInput) {
       collection_id
       name
+      num_of_tokens
       project_id
       create_timestamp
     }
@@ -26,6 +28,7 @@ export const updateCollection = /* GraphQL */ `
     updateCollection(updateCollectionInput: $updateCollectionInput) {
       collection_id
       name
+      num_of_tokens
       project_id
       create_timestamp
     }

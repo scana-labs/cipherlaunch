@@ -6,6 +6,7 @@ export const onCreateCollection = /* GraphQL */ `
     onCreateCollection {
       collection_id
       name
+      num_of_tokens
       project_id
       create_timestamp
     }
