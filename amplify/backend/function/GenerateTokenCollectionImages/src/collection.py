@@ -2,6 +2,7 @@ import logging
 from io import BytesIO
 
 from graphql import update_collection_with_generated_images
+from multiprocessing import Process
 from PIL import Image
 import boto3
 import json
@@ -36,9 +37,36 @@ class Collection:
                                   f"{self.collection_id}/image_metadata/image_metadata.json")['Body']\
             .read().decode('utf-8')
         image_metadata = json.loads(image_metadata_raw)
+        token_creation_processes = []
+        partition_size = self.num_of_tokens // 30
+        i = 0
+        while i < self.num_of_tokens:
+            end_token = i + partition_size
+            if end_token > self.num_of_tokens:
+                end_token = self.num_of_tokens
+            token_image_metadata = []
+            token_ids = []
+            for j in range(i, end_token):
+                token_image_metadata.append(image_metadata[str(j)])
+                token_ids.append(j)
+            token_creation_process = Process(target=self.create_token_image, args=(token_image_metadata, token_ids))
+            token_creation_processes.append(token_creation_process)
+            i = end_token
 
-        for i in range(self.num_of_tokens):
-            trait_images = image_metadata[str(i)]
+        for process in token_creation_processes:
+            process.start()
+
+        for process in token_creation_processes:
+            process.join()
+
+        updated_collection = update_collection_with_generated_images(self.collection_id)
+        return updated_collection
+
+    def create_token_image(self, token_trait_images, token_ids):
+        for i in range(len(token_ids)):
+            trait_images = token_trait_images[i]
+            token_id = token_ids[i]
+            logger.debug(f"Creating token for token {token_id}")
             composite_img = Image.alpha_composite(
                 get_image_data(trait_images[0]),
                 get_image_data(trait_images[1])
@@ -50,9 +78,7 @@ class Collection:
                     image_rgb
                 )
             rgb_img = composite_img.convert('RGB')
-            self.upload_image(rgb_img, i)
-        updated_collection = update_collection_with_generated_images(self.collection_id)
-        return updated_collection
+            self.upload_image(rgb_img, token_id)
 
     def upload_image(self, img, token_id):
         buffer = BytesIO()
