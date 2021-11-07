@@ -5,6 +5,7 @@ export const getCollection = /* GraphQL */ `
   query GetCollection($collection_id: String!) {
     getCollection(collection_id: $collection_id) {
       collection_id
+      images_generated
       name
       num_of_tokens
       project_id
@@ -16,6 +17,7 @@ export const listCollections = /* GraphQL */ `
   query ListCollections {
     listCollections {
       collection_id
+      images_generated
       name
       num_of_tokens
       project_id
@@ -27,6 +29,7 @@ export const listCollectionsUnderProject = /* GraphQL */ `
   query ListCollectionsUnderProject($project_id: String!) {
     listCollectionsUnderProject(project_id: $project_id) {
       collection_id
+      images_generated
       name
       num_of_tokens
       project_id

@@ -1,15 +1,18 @@
 import json
 
+from collection import Collection
+
+
 def handler(event, context):
-  print('received event:')
-  print(event)
-  
-  return {
-      'statusCode': 200,
-      'headers': {
-          'Access-Control-Allow-Headers': '*',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+    collection_id = event["collection_id"]
+    project_id = event["project_id"]
+    num_of_tokens = event["num_of_tokens"]
+    collection = Collection(collection_id, project_id, num_of_tokens)
+    collection_with_images_generated = collection.generate_token_images()
+    return {
+      "statusCode": 200,
+      "headers": {
+        "Content-Type": "application/json"
       },
-      'body': json.dumps('Hello from your new Amplify Python lambda!')
-  }
+      "body": json.dumps(collection_with_images_generated)
+    }

@@ -7,19 +7,24 @@ from typing import Dict, List, Tuple
 
 
 class Token:
-    def __init__(self, token_traits: Dict[str, str]) -> None:
+    def __init__(self, token_traits: Dict[str, str], token_images: List[str]) -> None:
         self.token_id = -1
         self.token_traits = token_traits
+        self.token_images = token_images
 
     @classmethod
-    def random(cls, rarities) -> Token:
+    def random(cls, rarities, images) -> Token:
         token_traits = {}
+        token_images = []
         for category, trait_rarities in rarities.items():
             traits = list(trait_rarities.keys())
             rarities = list(trait_rarities.values())
             if traits and rarities:
                 token_traits[category] = random.choices(traits, rarities)[0]
-        return cls(token_traits)
+                image_url = images[category][token_traits[category]]
+                if image_url is not None:
+                    token_images.append(images[category][token_traits[category]])
+        return cls(token_traits, token_images)
 
     def incompatible(self, incompatible_traits: Dict[Tuple[str, str], List[Tuple[str, str]]]) -> bool:
         # Get (kev, val) pairs from self.token_traits.
@@ -44,7 +49,7 @@ class Token:
             'name': f'{project_name} #{self.token_id}',
         }
 
-    def metadata(self,  project_name, base_url) -> Dict:
+    def metadata(self, project_name, base_url) -> Dict:
         attributes = []
         for key, val in self.token_traits.items():
             attributes.append({

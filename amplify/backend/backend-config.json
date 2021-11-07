@@ -55,6 +55,13 @@
                         "GraphQLAPIEndpointOutput",
                         "GraphQLAPIKeyOutput"
                     ]
+                },
+                {
+                    "category": "storage",
+                    "resourceName": "CipherLaunchProjects",
+                    "attributes": [
+                        "BucketName"
+                    ]
                 }
             ]
         }

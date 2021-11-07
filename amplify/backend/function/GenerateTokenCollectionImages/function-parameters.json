@@ -2,7 +2,15 @@
   "permissions": {
     "api": {
       "CipherLaunchGQL": [
-        "Query"
+        "Query",
+        "Mutation"
+      ]
+    },
+    "storage": {
+      "CipherLaunchProjects": [
+        "create",
+        "read",
+        "update"
       ]
     }
   },

@@ -58,6 +58,7 @@ def create_new_collection(collection_id, collection_name, project_id, num_of_tok
 
     variables = {"input": {
         "collection_id": collection_id,
+        "images_generated": False,
         "name": collection_name,
         "num_of_tokens": num_of_tokens,
         "project_id": project_id,

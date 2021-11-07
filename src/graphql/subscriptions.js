@@ -5,6 +5,7 @@ export const onCreateCollection = /* GraphQL */ `
   subscription OnCreateCollection {
     onCreateCollection {
       collection_id
+      images_generated
       name
       num_of_tokens
       project_id

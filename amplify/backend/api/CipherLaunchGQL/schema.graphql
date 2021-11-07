@@ -1,5 +1,6 @@
 input CreateCollectionInput {
   collection_id: String!
+  images_generated: Boolean!
   name: String!
   num_of_tokens: Int!
   project_id: String!
@@ -8,6 +9,7 @@ input CreateCollectionInput {
 
 type Collection {
   collection_id: String!
+  images_generated: Boolean!
   name: String!
   num_of_tokens: Int!
   project_id: String!
@@ -16,6 +18,7 @@ type Collection {
 
 input UpdateCollectionInput {
   collection_id: String!
+  images_generated: Boolean
   name: String
   num_of_tokens: Int
   project_id: String

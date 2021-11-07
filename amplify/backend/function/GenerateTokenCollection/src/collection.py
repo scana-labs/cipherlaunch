@@ -27,7 +27,7 @@ class Collection:
         self.collection_name = collection_name
         self.base_url = base_url
         self.layers = self.get_project_layers()  # list of layers in order of ascending layer_order number
-        self.layer_trait_rarities, self.trait_images = self.get_metadata_maps()
+        self.layer_trait_rarities, self.layer_trait_images = self.get_metadata_maps()
         self.collection_id = str(uuid4())
 
     def get_project_layers(self):
@@ -35,15 +35,17 @@ class Collection:
 
     def get_metadata_maps(self):
         layers_trait_rarities = {}
-        trait_images = {}
+        layer_trait_images = {}
         for layer in self.layers:
             trait_rarities = {}
+            trait_images = {}
             layer_traits = get_traits_under_layer(layer["layer_id"])
             for trait in layer_traits:
                 trait_rarities[trait["name"]] = trait["rarity"]
                 trait_images[trait["name"]] = trait["image_url"]
             layers_trait_rarities[layer["name"]] = trait_rarities
-        return layers_trait_rarities, trait_images
+            layer_trait_images[layer["name"]] = trait_images
+        return layers_trait_rarities, layer_trait_images
 
     def generate_tokens(self, total_tokens, token_id_offset=0):
         # Check that we have enough traits to generate total_tokens.
@@ -62,7 +64,7 @@ class Collection:
         tokens = []
         tokens_set = set()
         while len(tokens) < total_tokens:
-            token = Token.random(self.layer_trait_rarities)
+            token = Token.random(self.layer_trait_rarities, self.layer_trait_images)
             if token in tokens_set:  # TODO: incompatible traits
                 continue
             tokens.append(token)
@@ -75,6 +77,23 @@ class Collection:
         # Print all token traits.
         # print(list(items))
 
+        layer_to_trait_counts_dict = self.write_trait_counts_file(tokens, total_tokens)
+
+        self.write_metadata_files(tokens)
+        self.write_images_file(tokens)
+
+        created_collection = create_new_collection(self.collection_id, self.collection_name, self.project_id,
+                                                   total_tokens)
+
+        create_collection_id = created_collection["collection_id"]
+        created_collection_name = created_collection["name"]
+
+        logger.debug(
+            f"Created collection with id {create_collection_id} and name {created_collection_name}")
+
+        return layer_to_trait_counts_dict, created_collection
+
+    def write_trait_counts_file(self, tokens, total_tokens):
         # Get trait counts.
         layer_to_trait_counts_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))
         for token in tokens:
@@ -88,10 +107,10 @@ class Collection:
         token_trait_count_bytes = bytes(json.dumps(layer_to_trait_counts_dict).encode(UTF_8_ENCODING))
         key = f"public/projects/{self.project_id}/collections/{self.collection_id}/trait-counts/trait-distribution.json"
         trait_counts_upload_response = s3_client.put_object(
-                Bucket=s3_bucket,
-                Key=key,
-                Body=token_trait_count_bytes
-            )
+            Bucket=s3_bucket,
+            Key=key,
+            Body=token_trait_count_bytes
+        )
         if trait_counts_upload_response['ResponseMetadata']['HTTPStatusCode'] != 200:
             status_code = trait_counts_upload_response['ResponseMetadata']['HTTPStatusCode']
             logger.error(
@@ -100,8 +119,9 @@ class Collection:
             )
             raise Exception(f"Failed to upload trait counts to bucket {s3_bucket}")
         logger.debug(f"Uploaded trait counts to bucket {s3_bucket} and key {key}")
+        return layer_to_trait_counts_dict
 
-        # Write each item's metadata to a separate metadata file.
+    def write_metadata_files(self, tokens):
         for token in tokens:
             metadata_bytes = bytes(json.dumps(token.metadata(self.project_name, self.base_url)).encode(UTF_8_ENCODING))
             key = f"public/projects/{self.project_id}/collections/{self.collection_id}/metadata/{token.token_id}.json"
@@ -120,13 +140,26 @@ class Collection:
                                 f"{key}")
             logger.debug(f"Uploaded metadata for token_id {token.token_id} to {key}")
 
-        created_collection = create_new_collection(self.collection_id, self.collection_name, self.project_id, total_tokens)
+    def write_images_file(self, tokens):
+        token_images = {}
+        for token in tokens:
+            token_images[token.token_id] = token.token_images
+        token_images_bytes = bytes(json.dumps(token_images).encode(UTF_8_ENCODING))
+        key = f"public/projects/{self.project_id}/collections/{self.collection_id}/image_metadata/image_metadata.json"
+        metadata_upload_response = s3_client.put_object(
+            Bucket=s3_bucket,
+            Key=key,
+            Body=token_images_bytes
+        )
+        if metadata_upload_response['ResponseMetadata']['HTTPStatusCode'] != 200:
+            status_code = metadata_upload_response['ResponseMetadata']['HTTPStatusCode']
+            logger.error(
+                f"Received status code {status_code} when attempting to put object to bucket " +
+                f"{s3_bucket} and key {key}"
+            )
+            raise Exception(f"Failed to upload image metadata for token_id {token.token_id} to key " +
+                            f"{key}")
+        logger.debug(f"Uploaded image metadata for token_id {token.token_id} to {key}")
 
-        create_collection_id = created_collection["collection_id"]
-        created_collection_name = created_collection["name"]
 
-        logger.debug(
-            f"Created collection with id {create_collection_id} and name {created_collection_name}")
-
-        return layer_to_trait_counts_dict, created_collection
 
