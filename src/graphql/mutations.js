@@ -37,6 +37,44 @@ export const updateCollection = /* GraphQL */ `
     }
   }
 `;
+export const deleteIncompatibility = /* GraphQL */ `
+  mutation DeleteIncompatibility($incompatibility_id: String!) {
+    deleteIncompatibility(incompatibility_id: $incompatibility_id) {
+      trait_1_id
+      trait_2_id
+      project_id
+      incompatibility_id
+    }
+  }
+`;
+export const createIncompatibility = /* GraphQL */ `
+  mutation CreateIncompatibility(
+    $createIncompatibilityInput: CreateIncompatibilityInput!
+  ) {
+    createIncompatibility(
+      createIncompatibilityInput: $createIncompatibilityInput
+    ) {
+      trait_1_id
+      trait_2_id
+      project_id
+      incompatibility_id
+    }
+  }
+`;
+export const updateIncompatibility = /* GraphQL */ `
+  mutation UpdateIncompatibility(
+    $updateIncompatibilityInput: UpdateIncompatibilityInput!
+  ) {
+    updateIncompatibility(
+      updateIncompatibilityInput: $updateIncompatibilityInput
+    ) {
+      trait_1_id
+      trait_2_id
+      project_id
+      incompatibility_id
+    }
+  }
+`;
 export const deleteProject = /* GraphQL */ `
   mutation DeleteProject($project_id: String!) {
     deleteProject(project_id: $project_id) {

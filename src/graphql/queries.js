@@ -37,6 +37,38 @@ export const listCollectionsUnderProject = /* GraphQL */ `
     }
   }
 `;
+export const getIncompatibility = /* GraphQL */ `
+  query GetIncompatibility($incompatibility_id: String!) {
+    getIncompatibility(incompatibility_id: $incompatibility_id) {
+      collection_id
+      images_generated
+      name
+      num_of_tokens
+      project_id
+      create_timestamp
+    }
+  }
+`;
+export const listIncompatibilities = /* GraphQL */ `
+  query ListIncompatibilities {
+    listIncompatibilities {
+      trait_1_id
+      trait_2_id
+      project_id
+      incompatibility_id
+    }
+  }
+`;
+export const listIncompatibilitiesUnderProject = /* GraphQL */ `
+  query ListIncompatibilitiesUnderProject($project_id: String!) {
+    listIncompatibilitiesUnderProject(project_id: $project_id) {
+      trait_1_id
+      trait_2_id
+      project_id
+      incompatibility_id
+    }
+  }
+`;
 export const getProject = /* GraphQL */ `
   query GetProject($project_id: String!) {
     getProject(project_id: $project_id) {

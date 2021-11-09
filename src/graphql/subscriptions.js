@@ -13,6 +13,16 @@ export const onCreateCollection = /* GraphQL */ `
     }
   }
 `;
+export const onCreateIncompatibility = /* GraphQL */ `
+  subscription OnCreateIncompatibility {
+    onCreateIncompatibility {
+      trait_1_id
+      trait_2_id
+      project_id
+      incompatibility_id
+    }
+  }
+`;
 export const onCreateProject = /* GraphQL */ `
   subscription OnCreateProject {
     onCreateProject {

@@ -12,6 +12,20 @@ GRAPHQL_API_KEY = os.getenv("API_CIPHERLAUNCHGQL_GRAPHQLAPIKEYOUTPUT")
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+def get_incompatibilities_under_project(project_id):
+    query = """
+            query listIncompatibilitiesUnderProject ($project_id: String!) {
+                listIncompatibilitiesUnderProject(project_id: $project_id) {
+                    trait_1_id
+                    trait_2_id
+                }
+            }
+        """
+    variables = {"project_id": project_id}
+    response_data = run_graphql_query(query, variables)
+    logger.debug("incompatibilities under project query result: " + str(response_data))
+    return response_data["listIncompatibilitiesUnderProject"]
+
 
 def get_layers_under_project(project_id):
     query = """
@@ -33,6 +47,7 @@ def get_traits_under_layer(layer_id):
     query = """
         query ($layer_id : String!) {
             listTraitsUnderLayer(layer_id: $layer_id) {
+                trait_id
                 name
                 rarity
                 image_url

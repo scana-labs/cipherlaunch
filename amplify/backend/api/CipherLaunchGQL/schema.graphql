@@ -25,6 +25,27 @@ input UpdateCollectionInput {
   create_timestamp: String
 }
 
+input CreateIncompatibilityInput {
+  trait_1_id: String!
+  trait_2_id: String!
+  project_id: String!
+  incompatibility_id: String!
+}
+
+type Incompatibility {
+  trait_1_id: String!
+  trait_2_id: String!
+  project_id: String!
+  incompatibility_id: String!
+}
+
+input UpdateIncompatibilityInput {
+  trait_1_id: String
+  trait_2_id: String
+  project_id: String
+  incompatibility_id: String!
+}
+
 input CreateProjectInput {
   project_id: String!
   user_id: String!
@@ -77,6 +98,9 @@ type Mutation {
   deleteCollection(collection_id: String!): Collection
   createCollection(createCollectionInput: CreateCollectionInput!): Collection
   updateCollection(updateCollectionInput: UpdateCollectionInput!): Collection
+  deleteIncompatibility(incompatibility_id: String!): Incompatibility
+  createIncompatibility(createIncompatibilityInput: CreateIncompatibilityInput!): Incompatibility
+  updateIncompatibility(updateIncompatibilityInput: UpdateIncompatibilityInput!): Incompatibility
   deleteProject(project_id: String!): Project
   createProject(createProjectInput: CreateProjectInput!): Project
   updateProject(updateProjectInput: UpdateProjectInput!): Project
@@ -92,6 +116,9 @@ type Query {
   getCollection(collection_id: String!): Collection
   listCollections: [Collection]
   listCollectionsUnderProject(project_id: String!): [Collection]
+  getIncompatibility(incompatibility_id: String!): Collection
+  listIncompatibilities: [Incompatibility]
+  listIncompatibilitiesUnderProject(project_id: String!): [Incompatibility]
   getProject(project_id: String!): Project
   listProjects: [Project]
   listProjectsUnderUser(user_id: String!): [Project]
@@ -112,6 +139,7 @@ schema {
 
 type Subscription {
   onCreateCollection: Collection @aws_subscribe(mutations: ["createCollection"])
+  onCreateIncompatibility: Incompatibility @aws_subscribe(mutations: ["createIncompatibility"])
   onCreateProject: Project @aws_subscribe(mutations: ["createProject"])
   onCreateTrait: Trait @aws_subscribe(mutations: ["createTrait"])
   onCreateLayer: Layer @aws_subscribe(mutations: ["createLayer"])

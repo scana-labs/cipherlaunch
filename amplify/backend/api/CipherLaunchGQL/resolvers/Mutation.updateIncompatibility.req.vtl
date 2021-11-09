@@ -1,0 +1,9 @@
+#set( $updateList = {} )
+#foreach( $entry in $ctx.args.updateIncompatibilityInput.keySet() )
+  #set( $discard = $updateList.put($entry, "'$ctx.args.updateIncompatibilityInput[$entry]'") )
+#end
+#set( $update = $updateList.toString().replace("{","").replace("}","") )
+{
+  "version": "2018-05-29",
+  "statements":   ["UPDATE Incompatibility SET $update WHERE incompatibility_id='$ctx.args.updateIncompatibilityInput.incompatibility_id'", "SELECT * FROM Incompatibility WHERE incompatibility_id='$ctx.args.updateIncompatibilityInput.incompatibility_id'"]
+}
