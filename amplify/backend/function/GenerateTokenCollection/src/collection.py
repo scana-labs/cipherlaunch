@@ -58,7 +58,7 @@ class Collection:
                 trait_rarities[trait["trait_id"]] = trait["rarity"]
                 trait_names[trait["trait_id"]] = trait["name"]
                 trait_images[trait["trait_id"]] = trait["image_url"]
-            layer_trait_rarities[layer["layer_id"]] = trait_rarities
+            layer_trait_rarities[layer["name"]] = trait_rarities
         return layer_trait_rarities, trait_names, trait_images
 
     def generate_tokens(self, total_tokens, token_id_offset=0):
@@ -116,6 +116,7 @@ class Collection:
         for layer in layer_to_trait_counts_dict.keys():
             for trait in layer_to_trait_counts_dict[layer].keys():
                 layer_to_trait_counts_dict[layer][trait]["actual_rarity"] /= total_tokens
+                layer_to_trait_counts_dict[layer][trait]["actual_rarity"] *= 100
         for layer in self.layer_trait_rarities.keys():
             for trait in self.layer_trait_rarities[layer].keys():
                 layer_to_trait_counts_dict[layer][self.trait_names[trait]]["input_rarity"] \

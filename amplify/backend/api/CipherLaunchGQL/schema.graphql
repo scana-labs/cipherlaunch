@@ -119,6 +119,7 @@ type Query {
   getIncompatibility(incompatibility_id: String!): Collection
   listIncompatibilities: [Incompatibility]
   listIncompatibilitiesUnderProject(project_id: String!): [Incompatibility]
+  listIncompatibilitiesWithTrait(trait_id: String!): [Incompatibility]
   getProject(project_id: String!): Project
   listProjects: [Project]
   listProjectsUnderUser(user_id: String!): [Project]
