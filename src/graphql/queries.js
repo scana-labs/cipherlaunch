@@ -69,6 +69,16 @@ export const listIncompatibilitiesUnderProject = /* GraphQL */ `
     }
   }
 `;
+export const listIncompatibilitiesWithTrait = /* GraphQL */ `
+  query ListIncompatibilitiesWithTrait($trait_id: String!) {
+    listIncompatibilitiesWithTrait(trait_id: $trait_id) {
+      trait_1_id
+      trait_2_id
+      project_id
+      incompatibility_id
+    }
+  }
+`;
 export const getProject = /* GraphQL */ `
   query GetProject($project_id: String!) {
     getProject(project_id: $project_id) {

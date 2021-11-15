@@ -34,11 +34,15 @@ class Collection:
     def generate_token_images(self):
         image_metadata_raw = s3_client.get_object(
             Bucket=s3_bucket, Key=f"public/projects/{self.project_id}/collections/" +
-                                  f"{self.collection_id}/image_metadata/image_metadata.json")['Body']\
+                                  f"{self.collection_id}/image_metadata/image_metadata.json")['Body'] \
             .read().decode('utf-8')
         image_metadata = json.loads(image_metadata_raw)
+
+        '''Parallelize token creation to prevent Lambda timeout.'''
         token_creation_processes = []
         partition_size = self.num_of_tokens // 30
+        if partition_size == 0:
+            partition_size = 1  # prevents an infinite loop
         i = 0
         while i < self.num_of_tokens:
             end_token = i + partition_size
@@ -65,18 +69,25 @@ class Collection:
     def create_token_image(self, token_trait_images, token_ids):
         for i in range(len(token_ids)):
             trait_images = token_trait_images[i]
-            token_id = token_ids[i]
-            logger.debug(f"Creating token for token {token_id}")
-            composite_img = Image.alpha_composite(
-                get_image_data(trait_images[0]),
-                get_image_data(trait_images[1])
-            )
-            for j in range(2, len(trait_images)):
-                image_rgb = get_image_data(trait_images[j])
+            if len(trait_images) == 0:
+                logger.error(f"Token Id {i} does not have any token trait images")
+                continue
+            elif len(trait_images) == 1:
+                logger.debug(f"Only 1 token trait found for token id {i}")
+                composite_img = get_image_data(trait_images[0])
+            else:
+                token_id = token_ids[i]
+                logger.debug(f"Layering multi-image token for token {token_id}")
                 composite_img = Image.alpha_composite(
-                    composite_img,
-                    image_rgb
+                    get_image_data(trait_images[0]),
+                    get_image_data(trait_images[1])
                 )
+                for j in range(2, len(trait_images)):
+                    image_rgb = get_image_data(trait_images[j])
+                    composite_img = Image.alpha_composite(
+                        composite_img,
+                        image_rgb
+                    )
             rgb_img = composite_img.convert('RGB')
             self.upload_image(rgb_img, token_id)
 
