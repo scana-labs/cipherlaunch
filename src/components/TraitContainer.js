@@ -14,7 +14,7 @@ const TraitContainer = ({
 	traits = [],
 }) => {
 	const [panelOpen, setPanelOpen] = useState(false)
-	const [currentTrait, setCurrentTrait] = useState(null)
+	const [currentTrait, setCurrentTrait] = useState({}) // TODO: Use correct default
 
 	return (
 		<div className="h-full w-full flex flex-col items-center justify-center">

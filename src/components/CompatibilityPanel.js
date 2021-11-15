@@ -123,6 +123,7 @@ const CompatibilityPanel = ({
 	}, [])
 
 	useEffect(() => {
+		// TODO: Check currentLayer.id and currentTrait.id
 		setFilters(layers
 			.filter(l => l.id !== currentLayer.id)
 			.map(l => ({
