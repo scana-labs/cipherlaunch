@@ -8,7 +8,7 @@ import { API, graphqlOperation } from '@aws-amplify/api'
 import Storage from '@aws-amplify/storage'
 import { v4 as uuidv4 } from 'uuid';
 
-import { createLayer, createTrait, deleteLayer, deleteTrait } from '../graphql/mutations'
+import { createLayer, createTrait, deleteLayer, deleteTrait, updateLayer } from '../graphql/mutations'
 import { getProject } from '../graphql/queries'
 import classNames from '../util/classNames'
 import { DEFAULT_PROJECTS_ROUTE } from '../constants/Routes'
@@ -275,21 +275,41 @@ const Project = ({ projects }) => {
 
 	// a little function to help us with reordering the result
 	const reorder = (list, startIndex, endIndex) => {
-		const result = Array.from(list);
-		const [removed] = result.splice(startIndex, 1);
-		result.splice(endIndex, 0, removed);
+		const result = Array.from(list)
+		const [removed] = result.splice(startIndex, 1)
+		result.splice(endIndex, 0, removed)
 
-		return result;
+		return result
 	};
 
 	// All layer logic should probably move into Layers
-	const handleDragEnd = (result) => {
+	const handleDragEnd = async (result) => {
 		if (!result.destination) {
 			return
 		}
 
 		// Filter out not-categorized layer
-		const reorderedLayers = reorder(layers, result.source.index, result.destination.index);
+		const reorderedLayers = reorder(layers, result.source.index, result.destination.index)
+
+		// Update layer order
+		// TODO: Do this in batch
+		console.log('Order', reorderedLayers)
+
+		try {
+			await Promise.all(reorderedLayers.map((l, idx) => {
+				const updateLayerInput = {
+					name: l.name,
+					project_id: projectId,
+					layer_id: l.id,
+					layer_order: idx,
+				}
+
+				return API.graphql(graphqlOperation(updateLayer, { updateLayerInput, }))
+			}))
+		}
+		catch (e) {
+			console.log('Error updating layer', e)
+		}
 
 		setLayers([...reorderedLayers])
 	}
@@ -362,7 +382,7 @@ const Project = ({ projects }) => {
 				</div>
 			</div>
 			<Switch>
-				<PrivateRoute exact path={`${path}/editProject`}>
+				<PrivateRoute path={`${path}/editProject`}>
 					<div className="mb-5">
 						<dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
 							<div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
@@ -387,6 +407,8 @@ const Project = ({ projects }) => {
 						moveTrait={moveTrait}
 						projectId={projectId}
 						removeLayer={removeLayer}
+						removeTrait={removeTrait}
+						selectedLayer={selectedLayer}
 						setLayers={setLayers}
 						setSelectedLayer={setSelectedLayer}
 						setSelectedTraits={setSelectedTraits}

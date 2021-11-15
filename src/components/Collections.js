@@ -12,34 +12,38 @@ import CollectionView from './CollectionView'
 import GenerateCollectionPanel from './GenerateCollectionPanel'
 import { listCollectionsUnderProject } from '../graphql/queries';
 import { PrivateRoute } from '../App';
-
-
-const fetchCollections = async (projectId, setCollections) => {
-	try {
-		console.log('Project Id', projectId)
-		const collections = await API.graphql(graphqlOperation(listCollectionsUnderProject, { project_id: projectId }))
-		const fetchedCollections = collections?.data?.listCollectionsUnderProject || []
-
-		setCollections(fetchedCollections)
-		console.log('Collections', fetchedCollections)
-	}
-	catch (e) {
-		console.log('Error fetching collections:', e)
-	}
-}
+import Spinner from './Spinner'
 
 const Collections = ({ layers = [], project = {} }) => {
 	const { path } = useRouteMatch()
-
-	console.log('Collections Path', path)
 
 	const [query, setQuery] = useState('')
 	const [isPanelOpen, setIsPanelOpen] = useState(false)
 	const [collections, setCollections] = useState([])
 	const [currentCollection, setCurrentCollection] = useState(null)
+	const [isLoading, setIsLoading] = useState(false)
+
+	const fetchCollections = async (projectId) => {
+		setIsLoading(true)
+
+		try {
+			console.log('Project Id', projectId)
+			const collections = await API.graphql(graphqlOperation(listCollectionsUnderProject, { project_id: projectId }))
+			const fetchedCollections = collections?.data?.listCollectionsUnderProject || []
+
+			setCollections(fetchedCollections)
+			console.log('Collections', fetchedCollections)
+		}
+		catch (e) {
+			console.log('Error fetching collections:', e)
+		}
+		finally {
+			setIsLoading(false)
+		}
+	}
 
 	useEffect(() => {
-		fetchCollections(project.id, setCollections)
+		fetchCollections(project.id)
 	}, [project.id])
 
 	return (
@@ -96,8 +100,9 @@ const Collections = ({ layers = [], project = {} }) => {
 						</div>
 					</div>
 					<div className="flex flex-col justify-center items-center">
-						{collections.length <= 0 && (<div className="text-2xl">Oops no collections! Try generating one!</div>)}
-						{collections.map((c, idx) => (<CollectionRow key={`collection-${idx}`} collection={c} setCurrentCollection={setCurrentCollection} />))}
+						{isLoading && <Spinner />}
+						{!isLoading && collections.length <= 0 && (<div className="text-2xl">Oops no collections! Try generating one!</div>)}
+						{!isLoading && collections.map((c, idx) => (<CollectionRow key={`collection-${idx}`} collection={c} setCurrentCollection={setCurrentCollection} />))}
 					</div>
 				</div>
 			</PrivateRoute>

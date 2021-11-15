@@ -6,10 +6,21 @@ import {
 	PlusCircleIcon,
 	PuzzleIcon,
 } from '@heroicons/react/solid'
+import { useHistory, useLocation } from 'react-router-dom'
 
 import classNames from '../util/classNames'
 
-const Layer = ({ layer, removeLayer, setSelectedLayer, setTraitModalOpen, setTraitPanelOpen, setSelectedTraits }) => {
+const Layer = ({
+	layer,
+	removeLayer,
+	handleSetBreadcrumb,
+	setSelectedLayer,
+	setSelectedTraits,
+	setTraitModalOpen,
+	setTraitPanelOpen,
+}) => {
+	const history = useHistory()
+	const location = useLocation()
 
 	return (
 		<Disclosure>
@@ -49,7 +60,10 @@ const Layer = ({ layer, removeLayer, setSelectedLayer, setTraitModalOpen, setTra
 							onClick={() => {
 								setSelectedLayer(layer)
 								setSelectedTraits(layer.traits)
-								setTraitPanelOpen(true)
+								handleSetBreadcrumb(
+									{ name: layer.name, href: `${location.pathname}/${layer.id}/trait`, current: false }, // href is not used or necesssary here
+								)
+								history.push(`${location.pathname}/${layer.id}/trait`)
 							}}
 						>
 							<PuzzleIcon className="-ml-1 mr-2 h-5 w-5 text-gray-300" aria-hidden="true" />

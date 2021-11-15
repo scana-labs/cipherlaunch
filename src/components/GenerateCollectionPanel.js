@@ -54,7 +54,6 @@ const GenerateCollectionPanel = ({ open, setOpen, generateCollection, project, l
 		finally {
 			setIsGenerating(false)
 		}
-
 	}
 
 	return (

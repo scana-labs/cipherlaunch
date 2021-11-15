@@ -3,15 +3,15 @@ import {
 	useRouteMatch,
 } from "react-router-dom";
 
-import Collections from "./Collections";
+import Collections from "./Collections"
 import { DEFAULT_COLLECTIONS_ROUTE } from '../constants/Routes'
 import Project from './Project'
 import NavBarPrivate from './NavBarPrivate'
-import { PrivateRoute } from '../App';
+import { PrivateRoute } from '../App'
 import Projects from './Projects'
 
 const Home = ({ projects, setProjects }) => {
-	const { path } = useRouteMatch();
+	const { path } = useRouteMatch()
 
 	return (
 		<div className="relative h-screen flex bg-white">
