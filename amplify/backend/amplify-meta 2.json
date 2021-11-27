@@ -30,7 +30,7 @@
         },
         "GraphQLAPIIdOutput": "6wyugegjznatrpzn3cr4cowzie",
         "GraphQLAPIEndpointOutput": "https://3hlo5dn5yrctpizup7ufiqwmue.appsync-api.us-west-2.amazonaws.com/graphql",
-        "GraphQLAPIKeyOutput": "da2-pliscwbkjfe57j6hs5jilbp4za"
+        "GraphQLAPIKeyOutput": "da2-puintzkmmrci5ceqhlpd35peey"
       },
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-cipherlaunchweb-dev-174328-deployment/amplify-cfn-templates/api/cloudformation-template.json",
