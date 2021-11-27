@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import {
 	ChartPieIcon,
+	PhotographIcon,
 	SparklesIcon,
 } from '@heroicons/react/solid'
 import { Link, useLocation, useParams, useRouteMatch, Switch } from 'react-router-dom'
@@ -9,6 +10,7 @@ import Storage from '@aws-amplify/storage'
 import classNames from '../util/classNames'
 import { DEFAULT_PROJECTS_ROUTE } from '../constants/Routes'
 import { PrivateRoute } from '../App';
+import ImagesView from './ImagesView'
 import MetricsView from './MetricsView'
 import TokensView from './TokensView'
 
@@ -21,8 +23,9 @@ const CollectionView = ({ collection }) => {
 	const [distribution, setDistribution] = useState({})
 	const [nav, setNav] = useState([{ name: 'Edit Project', href: `${DEFAULT_PROJECTS_ROUTE}/${projectId}`, current: true }])
 	const [tabs, setTabs] = useState([
-		{ name: 'Tokens', href: '/tokens', icon: SparklesIcon, current: true },
+		{ name: 'Token Metadata', href: '/tokens', icon: SparklesIcon, current: true },
 		{ name: 'Metrics', href: '/metrics', icon: ChartPieIcon, current: false },
+		{ name: 'Images', href: '/images', icon: PhotographIcon, current: false },
 	])
 
 	const fetchTokenMetadata = async () => {
@@ -122,6 +125,9 @@ const CollectionView = ({ collection }) => {
 				</PrivateRoute>
 				<PrivateRoute exact path={`${path}/metrics`}>
 					<MetricsView distribution={distribution} />
+				</PrivateRoute>
+				<PrivateRoute exact path={`${path}/images`}>
+					<ImagesView collection={collection} />
 				</PrivateRoute>
 			</Switch>
 		</div>

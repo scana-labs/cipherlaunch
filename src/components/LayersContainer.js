@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import { API, graphqlOperation } from 'aws-amplify'
+import { Link, Switch, useLocation, useRouteMatch } from 'react-router-dom'
 import Storage from '@aws-amplify/storage'
-
 import {
 	ChevronDownIcon,
+	ChevronRightIcon,
+	HomeIcon,
 	PlusCircleIcon,
 	SearchIcon,
 	SortAscendingIcon,
@@ -13,7 +15,9 @@ import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import AddLayersModal from './AddLayersModal'
 import Layer from './Layer'
 import { listLayersUnderProject, listTraitsUnderLayer } from '../graphql/queries';
+import { PrivateRoute } from '../App'
 import Spinner from './Spinner'
+import TraitContainer from './TraitContainer'
 
 const getItemStyle = (isDragging) => ({
 	// change background colour if dragging
@@ -24,17 +28,34 @@ const Layers = ({
 	addLayer,
 	handleDragEnd,
 	layers,
+	moveTrait,
 	projectId,
 	removeLayer,
+	removeTrait,
+	selectedLayer,
 	setLayers,
 	setSelectedLayer,
 	setSelectedTraits,
 	setTraitModalOpen,
 	setTraitPanelOpen,
 }) => {
+	const { path } = useRouteMatch()
+	const traitMatch = useRouteMatch(`${path}/:layerId/traits`)
+
 	const [isSpinning, setIsSpinning] = useState(true)
 	const [layerModalOpen, setLayerModalOpen] = useState(false)
 	const [query, setQuery] = useState('')
+	const [pages, setPages] = useState([
+		{ name: 'Layers', href: `${path}/editProject`, current: false },
+	])
+
+	const handleSetBreadcrumb = (page) => {
+		const newPages = [...pages]
+
+		newPages.push(page)
+
+		setPages(newPages)
+	}
 
 	const fetchLayers = useCallback(async () => {
 		try {
@@ -84,10 +105,40 @@ const Layers = ({
 		fetchLayers()
 	}, [fetchLayers])
 
+	// useEffect(() => {
+	// 	console.log('Trait match', path, traitMatch)
+
+	// 	if (!path.includes('trait')) {
+	// 		const newPages = [...pages]
+
+	// 		// TODO: Find a better way to do this
+	// 		// When navigating back to LayersContainer update breadcrumbs correctly
+	// 		setPages(newPages.filter(p => !p.href.includes('trait')))
+	// 	}
+
+	// }, [pages, path, traitMatch])
+
 	return (
 		<>
 			<div className="mb-5 pb-5 border-b border-gray-200 sm:flex sm:items-center sm:justify-between">
-				<h3 className="text-lg leading-6 font-medium text-gray-900">Layers</h3>
+				<nav className="flex" aria-label="Breadcrumb">
+					<ol className="flex items-center space-x-4">
+						{pages.map((page, idx) => (
+							<li key={page.name}>
+								<div className="flex items-center">
+									{idx !== 0 && <ChevronRightIcon className="flex-shrink-0 h-5 w-5 text-gray-400" aria-hidden="true" />}
+									<Link
+										to={page.href}
+										className="ml-4 text-lg font-medium text-gray-500 hover:text-gray-700"
+										aria-current={page.current ? 'page' : undefined}
+									>
+										{page.name}
+									</Link>
+								</div>
+							</li>
+						))}
+					</ol>
+				</nav>
 				<div className="mt-3 sm:mt-0 sm:ml-4">
 					<label htmlFor="mobile-search-candidate" className="sr-only">
 						Search
@@ -136,61 +187,76 @@ const Layers = ({
 					</div>
 				</div>
 			</div>
-			<DragDropContext onDragEnd={handleDragEnd}>
-				{isSpinning && <Spinner />}
-				{!isSpinning && layers.length === 0 ?
-					<div className="h-full w-full flex items-center justify-center mt-5">
-						<p className="font-medium text-gray-700">Oops no layers!</p>
-					</div>
-					:
-					<Droppable droppableId="droppable">
-						{(provided, snapshot) => (
-							<div
-								{...provided.droppableProps}
-								ref={provided.innerRef}
-							>
-								<ul className="">
-									{layers.filter(c => c.name.includes(query)).map((layer, index) => (
-										<Draggable key={layer.id} draggableId={`${layer.id}`} index={index}>
-											{(provided, snapshot) => (
-												<div
-													ref={provided.innerRef}
-													{...provided.draggableProps}
-													{...provided.dragHandleProps}
-													style={{
-														userSelect: "none",
-														padding: 8,
-														...provided.draggableProps.style,
-													}}
-												>
-													<li key={layer.id}>
-														<div
-															className="border border-gray-200 rounded block hover:bg-gray-50"
-															style={getItemStyle(
-																snapshot.isDragging,
-															)}
-														>
-															<Layer
-																layer={layer}
-																removeLayer={removeLayer}
-																setSelectedLayer={setSelectedLayer}
-																setTraitModalOpen={setTraitModalOpen}
-																setTraitPanelOpen={setTraitPanelOpen}
-																setSelectedTraits={setSelectedTraits}
-															/>
-														</div>
-													</li>
-												</div>
-											)}
-										</Draggable>
-									))}
-									{provided.placeholder}
-								</ul>
+			<Switch>
+				<PrivateRoute exact path={`${path}/:layerId/trait`}>
+					<TraitContainer
+						layers={layers}
+						currentLayer={selectedLayer}
+						moveTrait={moveTrait}
+						projectId={projectId}
+						removeTrait={removeTrait}
+						traits={selectedLayer.traits}
+					/>
+				</PrivateRoute>
+				<PrivateRoute path={path}>
+					<DragDropContext onDragEnd={handleDragEnd}>
+						{isSpinning && <Spinner />}
+						{!isSpinning && layers.length === 0 ?
+							<div className="h-full w-full flex items-center justify-center mt-5">
+								<p className="font-medium text-gray-700">Oops no layers!</p>
 							</div>
-						)}
-					</Droppable>
-				}
-			</DragDropContext>
+							:
+							<Droppable droppableId="droppable">
+								{(provided, snapshot) => (
+									<div
+										{...provided.droppableProps}
+										ref={provided.innerRef}
+									>
+										<ul className="">
+											{layers.filter(c => c.name.includes(query)).map((layer, index) => (
+												<Draggable key={layer.id} draggableId={`${layer.id}`} index={index}>
+													{(provided, snapshot) => (
+														<div
+															ref={provided.innerRef}
+															{...provided.draggableProps}
+															{...provided.dragHandleProps}
+															style={{
+																userSelect: "none",
+																padding: 8,
+																...provided.draggableProps.style,
+															}}
+														>
+															<li key={layer.id}>
+																<div
+																	className="border border-gray-200 rounded block hover:bg-gray-50"
+																	style={getItemStyle(
+																		snapshot.isDragging,
+																	)}
+																>
+																	<Layer
+																		handleSetBreadcrumb={handleSetBreadcrumb}
+																		layer={layer}
+																		removeLayer={removeLayer}
+																		setSelectedLayer={setSelectedLayer}
+																		setSelectedTraits={setSelectedTraits}
+																		setTraitModalOpen={setTraitModalOpen}
+																		setTraitPanelOpen={setTraitPanelOpen}
+																	/>
+																</div>
+															</li>
+														</div>
+													)}
+												</Draggable>
+											))}
+											{provided.placeholder}
+										</ul>
+									</div>
+								)}
+							</Droppable>
+						}
+					</DragDropContext>
+				</PrivateRoute>
+			</Switch>
 
 			<AddLayersModal open={layerModalOpen} setOpen={setLayerModalOpen} addLayer={addLayer} />
 		</>
