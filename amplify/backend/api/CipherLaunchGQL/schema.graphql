@@ -7,7 +7,7 @@ input CreateCollectionInput {
   create_timestamp: String!
 }
 
-type Collection {
+type Collection @aws_api_key @aws_iam {
   collection_id: String!
   images_generated: Boolean!
   name: String!
@@ -32,7 +32,7 @@ input CreateIncompatibilityInput {
   incompatibility_id: String!
 }
 
-type Incompatibility {
+type Incompatibility  @aws_api_key @aws_iam {
   trait_1_id: String!
   trait_2_id: String!
   project_id: String!
@@ -53,7 +53,7 @@ input CreateProjectInput {
   create_timestamp: String!
 }
 
-type Project {
+type Project   @aws_api_key @aws_iam {
   project_id: String!
   user_id: String!
   name: String!
@@ -76,7 +76,7 @@ input CreateTraitInput {
   layer_id: String
 }
 
-type Trait {
+type Trait   @aws_api_key @aws_iam {
   trait_id: String!
   name: String!
   rarity: Float
@@ -110,6 +110,8 @@ type Mutation {
   deleteLayer(layer_id: String!): Layer
   createLayer(createLayerInput: CreateLayerInput!): Layer
   updateLayer(updateLayerInput: UpdateLayerInput!): Layer
+  @aws_api_key @aws_iam
+
 }
 
 type Query {
@@ -129,7 +131,7 @@ type Query {
   getLayer(layer_id: String!): Layer
   listLayers: [Layer]
   listLayersUnderProject(project_id: String!): [Layer]
-
+  @aws_api_key @aws_iam
 }
 
 schema {
@@ -144,6 +146,8 @@ type Subscription {
   onCreateProject: Project @aws_subscribe(mutations: ["createProject"])
   onCreateTrait: Trait @aws_subscribe(mutations: ["createTrait"])
   onCreateLayer: Layer @aws_subscribe(mutations: ["createLayer"])
+  @aws_api_key @aws_iam
+
 }
 
 input CreateLayerInput {
@@ -153,7 +157,7 @@ input CreateLayerInput {
   layer_order: Int
 }
 
-type Layer {
+type Layer @aws_api_key @aws_iam {
   name: String!
   project_id: String!
   layer_id: String!
