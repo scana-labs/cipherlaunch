@@ -53,7 +53,7 @@ input CreateProjectInput {
   create_timestamp: String!
 }
 
-type Project   @aws_api_key @aws_iam {
+type Project  @aws_api_key @aws_iam {
   project_id: String!
   user_id: String!
   name: String!
@@ -94,7 +94,7 @@ input UpdateTraitInput {
   layer_id: String
 }
 
-type Mutation {
+type Mutation @aws_api_key @aws_iam {
   deleteCollection(collection_id: String!): Collection
   createCollection(createCollectionInput: CreateCollectionInput!): Collection
   updateCollection(updateCollectionInput: UpdateCollectionInput!): Collection
@@ -110,11 +110,9 @@ type Mutation {
   deleteLayer(layer_id: String!): Layer
   createLayer(createLayerInput: CreateLayerInput!): Layer
   updateLayer(updateLayerInput: UpdateLayerInput!): Layer
-  @aws_api_key @aws_iam
-
 }
 
-type Query {
+type Query @aws_api_key @aws_iam {
   getCollection(collection_id: String!): Collection
   listCollections: [Collection]
   listCollectionsUnderProject(project_id: String!): [Collection]
@@ -131,7 +129,6 @@ type Query {
   getLayer(layer_id: String!): Layer
   listLayers: [Layer]
   listLayersUnderProject(project_id: String!): [Layer]
-  @aws_api_key @aws_iam
 }
 
 schema {
@@ -140,13 +137,12 @@ schema {
   subscription: Subscription
 }
 
-type Subscription {
+type Subscription  @aws_api_key @aws_iam {
   onCreateCollection: Collection @aws_subscribe(mutations: ["createCollection"])
   onCreateIncompatibility: Incompatibility @aws_subscribe(mutations: ["createIncompatibility"])
   onCreateProject: Project @aws_subscribe(mutations: ["createProject"])
   onCreateTrait: Trait @aws_subscribe(mutations: ["createTrait"])
   onCreateLayer: Layer @aws_subscribe(mutations: ["createLayer"])
-  @aws_api_key @aws_iam
 
 }
 
