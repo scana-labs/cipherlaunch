@@ -18,54 +18,7 @@
       "rdsInit": true
     }
   },
-  "function": {
-    "GenerateTokenCollection": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": [
-        {
-          "category": "api",
-          "resourceName": "CipherLaunchGQL",
-          "attributes": [
-            "GraphQLAPIIdOutput",
-            "GraphQLAPIEndpointOutput",
-            "GraphQLAPIKeyOutput"
-          ]
-        },
-        {
-          "category": "storage",
-          "resourceName": "CipherLaunchProjects",
-          "attributes": [
-            "BucketName"
-          ]
-        }
-      ]
-    },
-    "GenerateTokenCollectionImages": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": [
-        {
-          "category": "api",
-          "resourceName": "CipherLaunchGQL",
-          "attributes": [
-            "GraphQLAPIIdOutput",
-            "GraphQLAPIEndpointOutput",
-            "GraphQLAPIKeyOutput"
-          ]
-        },
-        {
-          "category": "storage",
-          "resourceName": "CipherLaunchProjects",
-          "attributes": [
-            "BucketName"
-          ]
-        }
-      ]
-    }
-  },
+  "function": {},
   "auth": {
     "cognito8d64442b": {
       "service": "Cognito",
