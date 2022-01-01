@@ -1,61 +1,77 @@
-import { ReactComponent as Lucid } from '../assets/lucid.svg'
+
+import { ReactComponent as Logo } from '../assets/Logo.svg'
+import { ReactComponent as WaveBottom } from '../assets/WaveBottom.svg'
+import { ReactComponent as WaveTop } from '../assets/WaveTop.svg'
+import AssetDashboard from '../assets/AssetDashboard.png'
+import AssetTrading from '../assets/AssetTrading.png'
+import SmartContract from '../assets/SmartContract.png'
 
 import NavBarPublic from './NavBarPublic'
 import Features from './Features'
 import Footer from './Footer'
 import Team from './Team'
+import Join from './Join'
 
 import './Landing.css'
 
 const Landing = () => (
-	<div className="relative bg-white overflow-hidden">
-		<NavBarPublic />
-		<div className="flex w-screen">
-			<div className="relative w-full md:w-1/2">
-				<svg
-					className="hidden lg:block absolute right-0 inset-y-0 h-full w-48 text-white transform translate-x-1/2"
-					fill="currentColor"
-					viewBox="0 0 100 100"
-					preserveAspectRatio="none"
-					aria-hidden="true"
-				>
-					<polygon points="50,0 100,0 50,100 0,100" />
-				</svg>
-				<main className="flex h-full justify-center items-center m-16">
-					<div className="sm:text-center lg:text-left">
-						<h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-							<span className="block xl:inline">Launch your NFT <br/> with <u>no code</u></span>{' '}
+	<div className="h-full w-full relative">
+		<div className="absolute z-0 w-full">
+			<WaveTop />
+		</div>
+		<div className="absolute w-full h-full">
+			<img className="landing-bg-assets-trading z-10 float-left" src={AssetTrading} alt="Asset Trading" />
+			<img className="landing-bg-assets-dashboard z-10 float-right" src={AssetDashboard} alt="Asset Dashboard" />
+		</div>
+		<div className="main-content relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div className="max-w-6xl mx-auto">
+				<div className="hero-main">
+					<div className="absolute flex inset-x-0 top-0 m-10 z-10 justify-between">
+						<Logo />
+						<a
+							href="https://docs.google.com/forms/d/e/1FAIpQLScxLqjghEvBveL4L2nMQfscCjA5gRIvLs4Nwl26IPNh9Ix7RQ/viewform"
+							className="join-btn-header"
+							target="_blank"
+							rel="noreferrer"
+						>
+							Join Waitlist
+						</a>
+					</div>
+					<img className="absolute z-10 -right-40 transform scale-75" src={SmartContract} alt="Smart Contract" />
+					<div className="relative sm:text-center lg:text-left top-52 z-10">
+						<h1 className="text-4xl tracking-tight font-bold text-gray-900 sm:text-5xl md:text-6xl">
+							<span className="hero-title block xl:inline">Launch your NFT <br /> with no code</span>{' '}
 						</h1>
 						<p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
 							Manage individual assets and generate tokens with a single click. Turn those assets into NFTs with your own smart contract.
-						</p>
+					</p>
 						<div className="w-40 md:w-48 mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-							<div className="rounded-md shadow">
-								<a
-									href="https://docs.google.com/forms/d/e/1FAIpQLScxLqjghEvBveL4L2nMQfscCjA5gRIvLs4Nwl26IPNh9Ix7RQ/viewform"
-									className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-600 md:py-4 md:text-lg md:px-10"
-									target="_blank"
-									rel="noreferrer"
-								>
-									Join Waitlist
-								</a>
-							</div>
+							<a
+								href="https://docs.google.com/forms/d/e/1FAIpQLScxLqjghEvBveL4L2nMQfscCjA5gRIvLs4Nwl26IPNh9Ix7RQ/viewform"
+								className="join-btn"
+								target="_blank"
+								rel="noreferrer"
+							>
+								Join Waitlist
+							</a>
 						</div>
 					</div>
-				</main>
-			</div>
+				</div>
 
-			<div className="hidden md:flex justify-center items-center bg-blue-600 w-1/2">
-				<Lucid className="lucid" />
+				<Features />
+
+				<Team />
+
+				<Join />
+
+				<Footer />
+
 			</div>
 		</div>
-
-		<Features />
-
-		<Team />
-
-		<Footer />
-    </div>
+		<div className="absolute z-0 w-full">
+			<WaveBottom />
+		</div>
+	</div>
 )
 
 export default Landing

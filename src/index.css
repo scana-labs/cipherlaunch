@@ -1,3 +1,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    font-family: AvenirLTS;
+	font-weight: lighter;
+    src: url("assets/fonts/avenir_ff/AvenirLTStd-Roman.otf") format("opentype");
+}
+
+@font-face {
+    font-family: AvenirLTS;
+	font-weight: lighter;
+    src: url("assets/fonts/avenir_ff/AvenirLTStd-Book.otf") format("opentype");
+}
+
+@font-face {
+	font-family: AvenirLTS;
+	font-weight: bold;
+    src: url("assets/fonts/avenir_ff/AvenirLTStd-Black.otf") format("opentype");
+}
+
+body {
+	font-family: 'AvenirLTS', sans-serif;
+}
+
+h1,h2,h3,h4,h5,h6 {
+	color: #2B4756;
+}
