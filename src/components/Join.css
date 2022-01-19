@@ -12,7 +12,7 @@
 	left: 583px;
 	top: 33px;
 
-	background: #2B4756;
+	background: #1C2E38;
 	box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.16);
 	border-radius: 53px;
 
@@ -24,7 +24,13 @@
 	color: white;
 }
 
-.join-content {
-	height: 214px;
-	width: 860px;
+.join-content-btn:hover {
+	cursor: pointer;
+}
+
+@responsive {
+	.join-content {
+		height: 214px;
+		width: 860px;
+	}
 }

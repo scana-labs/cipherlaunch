@@ -1,15 +1,14 @@
-.hero-main {
-	height: 800px;
+.content-all {
+	height: 4000px;
 }
 
 .main-content {
-	height: 3200px;
+	height: 100%;
 	z-index: 1000;
 }
 
 .join-btn {
 	/* Auto Layout */
-	display: flex;
 	flex-direction: row;
 	justify-content: center;
 	align-items: center;
@@ -41,6 +40,12 @@
 	color: #87CADE;
 }
 
+.join-btn:hover {
+	background: none;
+	color: #1C2E38;
+	border: 2px solid #1C2E38;
+}
+
 .join-btn-header {
 	position: relative;
 
@@ -53,7 +58,7 @@
 	width: 141px;
 	height: 37px;
 
-	border: 2px solid #2B4756;
+	border: 2px solid #1C2E38;
 	box-sizing: border-box;
 	border-radius: 17.5px;
 
@@ -65,7 +70,7 @@
 	/* identical to box height, or 21px */
 	text-align: right;
 
-	color: #2B4756;
+	color: #1C2E38;
 }
 
 .join-btn-header:hover {
@@ -74,13 +79,18 @@
 }
 
 .landing-bg-assets-trading {
-	padding-top: 700px;
 }
 
 .landing-bg-assets-dashboard {
-	padding-top: 1200px;
 }
 
 .hero-title {
-	color: #2B4756;
+	color: #1C2E38;
+}
+
+.mobile-wave-box {
+	background: #87CADE;
+}
+
+.hero-project-text {
 }

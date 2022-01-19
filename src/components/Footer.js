@@ -15,9 +15,9 @@ const navigation = {
  }
 
 const Footer = () => (
-	<footer>
-		<Logo className="mt-20" />
-		<div className="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8 mt-48">
+	<footer className="flex flex-col items-center mt-24">
+		<Logo />
+		<div className="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
 			<div className="mt-8 flex justify-center space-x-6">
 				{navigation.social.map((item) => (
 					<a key={item.name} href={item.href} className="text-gray-400 hover:text-gray-500">
@@ -26,7 +26,7 @@ const Footer = () => (
 					</a>
 				))}
 			</div>
-			<p className="mt-8 text-center text-base text-gray-400">&copy; 2021 Cipher Launch, Inc. All rights reserved.</p>
+			<p className="mt-8 text-center text-base text-gray-400">&copy; 2022 Cipher Launch, Inc. All rights reserved.</p>
 		</div>
 	</footer>
 )
